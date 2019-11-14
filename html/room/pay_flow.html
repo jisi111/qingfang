@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css" />
+    <style>
+        body {
+            color: var(--theme-black);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" style="overflow: hidden;">
+        <header class="header theme-bg header-fix flex-row">
+            <img src="../../image/add_delete.png" alt="" style="width:1.25rem; height:1.25rem;" @click='goBack'>
+            <span v-text='title' style="font-size: 1.2rem; margin-left: 0.5rem; "></span>
+        </header>
+        <!--高度至少1px才能有效偏移-->
+        <div id='first-el' style="height: 1px; "></div>
+
+        <div class="base-padding">
+            <div class="flex-row" style="font-size:1.4rem;">练琴</div>
+            <div class="flex-row" style="font-size:1rem;margin:0.8rem 0rem  1rem 0">
+                不再是一个人枯燥漫长的坚持
+            </div>
+            <div class="grey-line"></div>
+            <div class="flex-row" style="margin:1.5rem 0 1.15rem 0;align-items:center;">
+                <div style="color:var(--theme-grey);">
+                    <span style="font-size:1.5rem;" v-text="orders.time+'分钟'"></span>
+                    <span style="font-size:1rem;" v-text="'/￥'+orders.totalAmount"></span>
+                </div>
+                <div class="flex-1"></div>
+                <div class="flex-row" style="align-items:center;">
+                    <img src="../../image/wait_minus.png" alt="" style="width:1.1rem;height:1.1rem;" @click='minus'>
+                    <span style="margin:0 1.1rem;font-size:0.7rem;" v-text='orders.number'></span>
+                    <img src="../../image/wait_add.png" alt="" style="width:1rem;height:1rem;" @click='add'>
+                </div>
+            </div>
+            <div class="flex-row" style="color:#9E9E9E;font-size:0.7rem;margin-bottom:1.65rem;">
+                您支付的费用将全部用于支付第三方服务器及音频视频的流量费，是维持平台运作的必要费用， 平台在此费用中不赚取任何差价，感谢您的理解与支持。
+            </div>
+        </div>
+        <div class="grey-line" style="height:0.5rem; background-color:var(--theme-light-grey);"></div>
+        <div class="base-padding">
+            <div class="flex-row " style="color:var(--theme-grey);margin-top:1.3rem;font-size:0.8rem;">
+                支付方式
+            </div>
+            <div class="flex-row" style="align-items:center; margin:1.1rem 0;">
+                <img src="../../image/wait_wx.png" alt="微信" style="width:1.2rem;height:1.2rem;margin-right:0.5rem;">
+                <label for="pay" style="font-size:1rem;">微信支付</label>
+                <div class="flex-1"></div>
+                <input type="radio" name="pay" class="aui-radio" id='pay' v-model="orders.payType" value='2'>
+                <!-- <img src="../../image/pay.png" alt="支付宝"> -->
+            </div>
+            <div class="flex-row" style="align-items:center; margin:1.1rem 0;">
+                <img src="../../image/wait_zfb.png" alt="支付宝" style="width:1rem;height:1rem;margin-right:0.5rem;">
+                <label for="pay" style="font-size:1rem;">支付宝支付</label>
+                <div class="flex-1"></div>
+                <input type="radio" name="pay" class="aui-radio" id='pay' v-model="orders.payType" value='1'>
+                <!-- <img src="../../image/pay.png" alt="支付宝"> -->
+            </div>
+        </div>
+        <div class="bottom_fixed" accesskey="" @click='payOrders'>确定</div>
+    </div>
+
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js"></script>
+<script type="text/javascript" src="../../script/aui-toast.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        $api.fixStatusBar($api.dom('header'));
+        $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.roomId = params.roomId;
+        if (params.inVideoChat != undefined) {
+            vm.inVideoChat = params.inVideoChat;
+        }
+        vm.initData();
+    };
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '',
+            roomId: '',
+            inVideoChat: false,
+            timeUnit: 30,// 时间单位，30分钟
+            orders: {
+                payType: 1, // 1支付宝，2微信
+                time: 30,
+                price: '',
+                number: 1,
+                totalAmount: '',
+            },
+        },
+        methods: {
+            initData() {
+                this.getPrice();
+            },
+            getPrice() {
+                var that = this;
+                ajaxPost('/systemConfig/getFlowPrice', '', function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.orders.price = ret.data;// 30分钟的价格
+                            that.orders.totalAmount = that.orders.price * 1;// 初始值为购买一个商品
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            add() {
+                this.orders.number++;
+                this.orders.totalAmount = this.orders.price * this.orders.number;
+                this.orders.time = this.timeUnit * this.orders.number
+            },
+            minus() {
+                if (this.orders.number <= 1) {
+                    api.toast({
+                        msg: '请至少选择一个小时',
+                        location: 'middle'
+                    });
+                    return;
+                }
+                this.orders.number--;
+                this.orders.totalAmount = this.orders.price * this.orders.number;
+                this.orders.time = this.timeUnit * this.orders.number
+            },
+            isRoomFull() {
+                var that = this;
+                if (that.inVideoChat) {
+                    api.closeWin();
+                    return;
+                }
+                ajaxPost('/roomMember/isRoomFull', that.roomId + '', function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            if (ret.data) {// 已满员，不允许进入
+                                var dialog = new auiDialog({})
+                                dialog.alert({
+                                    title:"提示",
+                                    msg:'琴房已经满员，请下次再约',
+                                    buttons:['取消', '确定']
+                                }, function(ret) {
+                                })
+                            } else {
+                                api.openWin({
+                                    name: 'video_win',
+                                    url: '../video_chat/video_win.html',
+                                    pageParam: {
+                                        roomId: that.roomId + '',
+                                    },
+                                    reload: true,
+                                    slidBackEnabled: false
+                                });
+                            }
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            payOrders() {
+                console.log(JSON.stringify(this.orders));
+                if (this.orders.payType == 1) { // 支付宝
+                    this.aliPayOrders();
+                } else { // 微信
+                    this.wxPayOrders();
+                }
+            },
+            //微信支付
+            wxPayOrders() {
+                var that = this;
+                if (that.orders.price > 0){
+                    ajaxPost('/wxpay/doUnifiedOrder', {
+                        price:that.orders.price + '',
+                        number:that.orders.number + '',
+                        totalAmount:that.orders.totalAmount +''
+                    }, function(ret, err) {
+                        console.log('doUnifiedOrder ret ' + JSON.stringify(ret));
+                        if (ret) {
+                            if (ret.returnCode == '1') {
+                                var data = ret.data;
+                                var localOrdersId = data.ordersid; // 注意小写
+                                console.log(JSON.stringify(data));
+                                var temp = {
+                                    apiKey: '',
+                                    orderId: data.prepayid,
+                                    mchId: data.partnerid,
+                                    nonceStr: data.noncestr,
+                                    timeStamp: data.timestamp,
+                                    package: data.package,
+                                    sign: data.sign
+                                }
+                                // console.log(JSON.stringify(temp));
+                                var wxPay = api.require('wxPay');
+                                wxPay.payOrder({
+                                    apiKey: '',
+                                    orderId: data.prepayid,
+                                    mchId: data.partnerid,
+                                    nonceStr: data.noncestr,
+                                    timeStamp: data.timestamp,
+                                    package: data.package,
+                                    sign: data.sign
+                                }, function(ret, err) {
+                                    console.log('wxpay ret ' + JSON.stringify(ret) + ' err ' + JSON.stringify(err));
+                                    console.log(ret.status);
+                                    if (ret.status) {
+                                        console.log('支付成功');
+
+                                        // 房间是否已满员
+                                        that.isRoomFull();
+                                    } else {
+                                        if (err.code == -2) { // 取消支付
+                                            api.toast({
+                                                msg: '支付取消',
+                                                location: 'middle'
+                                            });
+                                        } else {
+                                            api.alert({
+                                                title: '异常',
+                                                msg: JSON.stringify(err),
+                                            }, function(ret, err) {});
+                                        }
+                                    }
+                                });
+                            } else {
+                                api.toast({
+                                    msg: ret.returnMsg,
+                                    location: 'middle'
+                                });
+                            }
+                        } else {
+                            api.toast({
+                                msg: JSON.stringify(err),
+                                location: 'middle'
+                            });
+                        }
+                    })
+                }else {
+                    api.toast({
+                        msg: '系统错误，请重新下单',
+                        duration: 2000,
+                        location: 'middle'
+                    });
+
+                }
+
+            },
+            // 支付宝支付
+            aliPayOrders() {
+                var that = this;
+                var params = {
+                    price: that.orders.price + '',
+                    number: that.orders.number + '',
+                    totalAmount: that.orders.totalAmount + ''
+                };
+                console.log(JSON.stringify(params));
+                if(that.orders.price > 0){
+                    ajaxPost('/alipay/getPayInfo', params, function(ret,err){
+                        console.log(JSON.stringify(ret));
+                        if (ret) {
+                            if (ret.returnCode == '1') {
+                                var aliPayPlus = api.require('aliPayPlus');
+                                var sign = ret.data.sign;
+                                var ordersId = ret.data.ordersId;
+                                aliPayPlus.payOrder({
+                                    orderInfo: sign
+                                }, function(ret, err) {
+                                    if (ret.code == '9000') {
+                                        // 房间是否已满员
+                                        that.isRoomFull();
+                                    } else {
+                                        api.toast({
+                                            msg: '支付取消',
+                                            location: 'middle'
+                                        });
+                                    }
+                                });
+                            } else {
+                                api.toast({
+                                    msg: ret.returnMsg,
+                                    location: 'middle'
+                                });
+                            }
+                        } else {
+                            api.toast({
+                                msg: JSON.stringify(err),
+                                location: 'middle'
+                            });
+                        }
+                    })
+                }else {
+                    api.toast({
+                        msg: '系统错误，请重新下单',
+                        location: 'middle'
+                    });
+
+                }
+
+            },
+        }
+    })
+</script>
+
+</html>

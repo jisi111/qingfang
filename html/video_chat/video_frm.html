@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <style>
+
+    </style>
+</head>
+<body>
+<div id="app" style="overflow: hidden; ">
+    <div id='header' class="header-fix" >
+    </div>
+	<!--高度至少1px才能有效偏移-->
+    <div id='first-el' style="height: 1px; "></div>
+
+    <div class="base-padding">
+
+    </div>
+
+</div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    var agoraLive;
+
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        $api.fixStatusBar($api.dom('#header'));
+        $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('#header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.roomId = params.roomId + '';
+
+        vm.initData();
+    };
+
+    function exit() {
+        agoraLive.destroy();
+        if (vm.onlineListInterval != undefined) {
+            clearInterval(vm.onlineListInterval);
+        }
+        if (vm.flowTimeInterval != undefined) {
+            clearInterval(vm.flowTimeInterval);
+        }
+    }
+
+    function muteSwitch(val) {
+        console.log('val ' + val);
+        agoraLive.muteAllRemoteAudioStreams({
+            muted: val
+        }, function(ret) {
+            if (ret.status) {
+
+            }
+        });
+    }
+
+    function cameraSwitch() {
+        agoraLive.switchCamera(function(ret) {
+            if (ret.status) {
+                // alert(JSON.stringify(ret));
+            }
+        });
+    }
+
+    function switchView() {
+        vm.switchView();
+    }
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '基本模板',
+            flowTimeInterval: '',
+            onlineListInterval: '',
+            flowWarnShowed: false,
+            roomId: '',
+            memberList: [],
+            userInfo: {},
+            mainAreaUid: 0,// 主视频区域绑定的uid
+            mainAreaName: '',
+            mainAreaImage: '',
+            childAreaUid: 0,// 小视频区域绑定的uid
+            childAreaName: '',
+            childAreaImage: '',
+        },
+        methods: {
+            switchView() {
+                console.log('switchView');
+                var that = this;
+
+                // 绑定id交换
+                var tmp = that.mainAreaUid;
+                that.mainAreaUid = that.childAreaUid;
+                that.childAreaUid = tmp;
+                var tmpName = that.mainAreaName;
+                that.mainAreaName = that.childAreaName;
+                that.childAreaName = tmpName;
+                var tmpImage = that.mainAreaImage;
+                that.mainAreaImage = that.childAreaImage;
+                that.childAreaImage = tmpImage;
+
+                // 主视频区域
+                agoraLive.resetVideoRect({
+                    uid: that.mainAreaUid,
+                    rect: {
+                        x: 0,
+                        y: 0,
+                        w: api.winWidth,
+                        h: api.winHeight
+                    },
+                    fixedOn: api.frameName
+                });
+
+                // 小视频区域
+                var x = 15;
+                var w = parseInt(api.frameWidth * 0.4);
+                var h = parseInt(w * 1.5);
+                var y = api.frameHeight - h - 30;
+                // console.log('x ' + x + ' y ' + y + ' w ' + w + ' h ' + h);
+                agoraLive.resetVideoRect({
+                    uid: that.childAreaUid,
+                    rect: {
+                        x: x,
+                        y: y,
+                        w: w,
+                        h: h
+                    },
+                    fixedOn: api.frameName
+                });
+
+                // 需要逐个提到顶层显示，否则切换后，小窗口的图像不会显示
+                // agoraLive.bringToFront({uid: that.mainAreaUid});
+                // agoraLive.bringToFront({uid: that.childAreaUid});
+                // api.bringFrameToFront({
+                //     from: 'video_ctrl'
+                // });
+
+                api.execScript({
+                    name: 'video_win',
+                    frameName: 'video_ctrl',
+                    script: 'showChildAreaInfo("' + that.childAreaName + '","' + that.childAreaImage + '");'
+                });
+            },
+            // 定时查询房间在线用户
+            startOnlineListInterval() {
+                var that = this;
+                if (that.onlineListInterval != undefined) {
+                    clearInterval(that.onlineListInterval);
+                }
+                that.onlineListInterval = setInterval(function () {
+                    that.getOnlineList();
+                }, 1000);
+            },
+            getOnlineList() {
+                // console.log('getOnlineList');
+                var that = this;
+                ajaxPost('/roomMember/getOnlineList', that.roomId + '', function(ret, err) {
+                    // console.log('getOnlineList ' + JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.memberList = ret.data;
+                            
+                            // 查到在线用户时，关闭定时查询
+                            if (that.memberList.length > 0) {
+                                clearInterval(that.onlineListInterval)
+                            }
+
+                            var x = 15;
+                            var w = parseInt(api.frameWidth * 0.4);
+                            var h = parseInt(w * 1.5);
+                            var y = api.frameHeight - h - 30;
+                            // console.log('w ' + w + ' h ' + h);
+
+                            // 第1个用户视频区域
+                            if (that.memberList.length > 0) {
+                                that.guestInfo = that.memberList[0];
+                                console.log('guestInfo ' + JSON.stringify(that.guestInfo));
+                                $api.setStorage('guestInfo', that.guestInfo);
+
+                                // 小视频区域绑定的uid
+                                that.childAreaUid = that.guestInfo.id;
+                                that.childAreaName = that.guestInfo.nickName;
+                                that.childAreaImage = that.guestInfo.image;
+
+                                agoraLive.initVideoRect({
+                                    uid: that.guestInfo.id,
+                                    rect: {
+                                        x: x,
+                                        y: y,
+                                        w: w,
+                                        h: h
+                                    },
+                                    fixedOn: api.frameName
+                                });
+
+                                // 显示客人头像、昵称，使用setTimeout是防止video_ctrl还没有渲染完成
+                                setTimeout(function() {
+                                    api.execScript({
+                                        name: 'video_win',
+                                        frameName: 'video_ctrl',
+                                        script: 'showChildAreaInfo("' + that.guestInfo.nickName + '","' + that.guestInfo.image + '");'
+                                    });
+                                }, 1000);
+                            }
+
+                            // 第2个用户视频区域
+                            // if (that.memberList.length > 1) {
+                            //     agoraLive.initVideoRect({
+                            //         uid: that.memberList[1].id,
+                            //         rect: {
+                            //             x: 15 + w + 15,
+                            //             y: y,
+                            //             w: w,
+                            //             h: h
+                            //         },
+                            //         fixedOn: api.frameName
+                            //     });
+                            // }
+
+                            // 打开用户视频流，否则为黑屏
+                            if (that.memberList.length > 0) {
+                                agoraLive.setupRemoteVideo( {
+                                    renderMode: 'RENDER_MODE_HIDDEN',// 不能用RENDER_MODE_FIT，界面顶部会有黑边
+                                    uid: that.memberList[0].id
+                                }, function(ret) {
+                                    if (ret.status) {
+                                        // alert(JSON.stringify(ret));
+                                    }
+                                });
+                            }
+
+                            // if (that.memberList.length > 1) {
+                            //     agoraLive.setupRemoteVideo( {
+                            //             renderMode: 'RENDER_MODE_HIDDEN',// 不能用RENDER_MODE_FIT，界面顶部会有黑边
+                            //             uid: that.memberList[1].id
+                            //     },function(ret) {
+                            //             if (ret.status) {
+                            //                 // alert(JSON.stringify(ret));
+                            //             }
+                            //     });
+                            // }
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            initData() {
+                var that = this;
+                that.userInfo = $api.getStorage('userInfo');
+
+                api.openFrame({
+                    name: 'video_ctrl',
+                    url: './video_ctrl.html',
+                    bgColor: 'rgba(0, 0, 0, 0)',
+                    pageParam: {
+                        roomId: that.roomId
+                    },
+                    reload: true
+                });
+
+                // 发送一次流量计时
+                that.sendFlowElapse();
+                // 定时发送流量计时
+                that.startFlowTimeInterval();
+
+                // 初始化声网
+                that.initVideo();
+            },
+            // 定时发送流量消耗
+            startFlowTimeInterval() {
+                var that = this;
+                if (that.flowTimeInterval != undefined) {
+                    clearInterval(that.flowTimeInterval);
+                }
+                that.flowTimeInterval = setInterval(function () {
+                    that.sendFlowElapse();
+                }, 10000);
+            },
+            sendFlowElapse() {
+                // console.log('sendFlowElapse');
+                var that = this;
+                var params = {
+                    roomId: that.roomId + '',
+                    os: api.systemType
+                }
+                console.log(JSON.stringify(params));
+                ajaxPost('/flowRecord/add', params, function(ret, err) {
+                    // console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            var flowPeriod = ret.data;
+                            // 流量余量小于5分钟提示
+                            if (flowPeriod <= 300 && flowPeriod > 10) {
+                                if (!that.flowWarnShowed) {
+                                    api.execScript({
+                                        name: 'video_win',
+                                        frameName: 'video_ctrl',
+                                        script: 'showFlowWarn();'
+                                    });
+                                }
+                                that.flowWarnShowed = true;
+                            }
+                            // 流量用完提示
+                            if (flowPeriod <= 10) {
+                                console.log('flowOut');
+                                exit();
+
+                                api.execScript({
+                                    name: 'video_win',
+                                    frameName: 'video_ctrl',
+                                    script: 'showFlowOut();'
+                                });
+                                clearInterval(that.flowTimeInterval);
+                            }
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            initVideo() {
+                var that = this;
+                agoraLive = api.require('agoraLive');
+                agoraLive.init({
+                    appId: agoraAppId
+                }, function(ret) {
+                    if (ret.status) {
+                        // alert('初始化成功');
+                        agoraLive.joinChannelByToken({
+                            channelToken: '',
+                            channelId: that.roomId,
+                            uid: that.userInfo.id
+                        }, function(ret, err) {
+                            // api.alert({msg:JSON.stringify(ret)});
+                            if (ret.status) {
+                                // 定时查询房间在线用户
+                                that.startOnlineListInterval();
+
+                                // 使用前置摄像头
+                                agoraLive.switchCamera(function(ret) {
+                                    if (ret.status) {
+                                        // alert(JSON.stringify(ret));
+                                    }
+                                });
+
+                                // 设置分辨率
+                                agoraLive.setVideoProfile( {
+                                    // profile: '360P_4',// 640x360 帧率(fps) 30
+                                    profile: '480P_9',// 848x480 帧率(fps) 30
+                                    swapWidthAndHeight: true
+                                },function(ret) {
+                                    if (ret.status) {
+                                        // alert(JSON.stringify(ret));
+                                    }
+                                });
+
+                                // 大视频区域绑定的uid
+                                that.mainAreaUid = that.userInfo.id;
+                                that.mainAreaName = that.userInfo.nickName;
+                                that.mainAreaImage = that.userInfo.image;
+
+                                // 用户自己视频区域
+                                agoraLive.initVideoRect({
+                                    uid: that.userInfo.id,
+                                    rect: {
+                                        x: 0,
+                                        y: 0,
+                                        w: api.winWidth,
+                                        h: api.winHeight
+                                    },
+                                    fixedOn: api.frameName
+                                });
+
+                                // 打开用户视频流，否则为黑屏
+                                agoraLive.enableVideo( function(ret) {
+                                    if (ret.status) {
+                                        // alert(JSON.stringify(ret));
+                                        agoraLive.setupLocalVideo({
+                                            uid: that.userInfo.id,
+                                            renderMode:'RENDER_MODE_HIDDEN'// 不能用RENDER_MODE_FIT，界面顶部会有黑边
+                                        },function(ret) {
+                                            if (ret.status) {
+                                                // alert(JSON.stringify(ret));
+                                            }
+                                        });
+                                    }
+                                });
+                            } else {
+                                alert(JSON.stringify(ret));
+                            }
+                        });
+                    }
+                });
+            },
+
+        }
+    })
+
+</script>
+
+</html>

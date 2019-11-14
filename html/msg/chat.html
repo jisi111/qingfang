@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <style>
+        input[type=text] {
+            background-color: #EEEEEE;
+            border: none;
+            padding-left: 1rem;
+        }
+        input[type=text]:focus {
+            background-color: #EEEEEE;
+            outline: none;
+            border-color: none;
+            padding-left: 1rem;
+        }
+        .send-btn {
+            color: white;
+            background-color: #FF4081;
+            height: 2rem;
+            border-radius: 1rem;
+            width: 3.5rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="app" class='flex-col ' style=" ">
+        <header class="header theme-bg header-fix flex-row">
+            <img src="../../image/add_delete.png" alt="" style="width:1.25rem; height:1.25rem;" @click='goBack'>
+            <span v-text='title' style="font-size: 1.2rem; margin-left: 0.5rem; "></span>
+        </header>
+        <!--高度至少1px才能有效偏移-->
+        <div id='first-el' class='grey-line' style="height: 1px; "></div>
+
+        <div class="base-padding flex-1" id='list' style="padding-bottom: 1rem; overflow: scroll; ">
+            <div class="" v-if='listEndVisible' style="text-align: center; padding: 0.5rem 0 0; font-size: 0.6rem; color: #9E9E9E; " >
+                没有更多了
+            </div>
+            <div class="" v-for='(item, index) in chatList'>
+                <div class="flex-row flex-center" v-if='item.isTimeVisible' v-text='getTimeDiff(item.createTime)'
+                    style="align-items:center; font-size: 0.6rem; color: #9E9E9E; margin-top: 1rem; ">
+                </div>
+                <!-- 对方消息 -->
+                <div class="flex-row" v-if='item.srcId == friendId' style="font-size: 0.7rem; color: #515151; margin-top: 1rem; ">
+                    <div class="flex-row" style="margin-right: auto; align-items: center; ">
+                        <img :src="friendImage" style="width: 2.5rem; height: 2.5rem; border-radius: 50%; ">
+                        <div class="" style="border: 8px solid; border-color: transparent #EEEEEE transparent transparent ; "></div>
+                        <div class='flex-row' v-text='item.content'
+                            style="padding: 0 1rem; height: 2rem; align-items: center; background-color: #EEEEEE; border-radius: 6px; ">今晚一起练琴</div>
+                    </div>
+                </div>
+                <!-- 我方消息 -->
+                <div class="flex-row" v-if='item.srcId == userInfo.id' style="font-size: 0.7rem; color: #515151; margin-top: 1rem;">
+                    <div class="flex-row" style="margin-left: auto; align-items: center; ">
+                        <div class='flex-row' v-text='item.content' style="padding: 0 1rem; height: 2rem; align-items: center; background-color: #EEEEEE; border-radius: 6px; ">今晚一起练琴</div>
+                        <div class="" style="border: 8px solid; border-color: transparent transparent transparent #EEEEEE; "></div>
+                        <img :src="userInfo.image" style="width: 2.5rem; height: 2.5rem; border-radius: 50%; ">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-row base-padding" style="background-color: white; align-items: center; border-top: 1px solid var(--theme-light-grey); height: 3rem; ">
+            <input type="text" id='msgInput' @focus='inputFocus' v-model='chatContent' style="width: 75%; height: 2rem; border-radius: 0.9rem; ">
+            <div class="flex-row" style="width: 25%; justify-content: center;  ">
+                <div class="send-btn flex-row" @click='sendMsg' style="">发送</div>
+            </div>
+        </div>
+
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        $api.fixStatusBar($api.dom('header'));
+        $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.friendId = params.targetId;
+        // vm.friendId = 13;
+        vm.initData();
+
+        // socket消息
+        api.addEventListener({
+            name: 'newSocketMsg'
+        }, function(ret, err) {
+            console.log('chat receive msg ' + JSON.stringify(ret));
+            vm.getChatList();
+        });
+
+        api.addEventListener({
+            name:'swipedown'
+        }, function(ret, err) {
+            console.log('swipedown ' + $api.dom('#list').scrollTop);
+            if ($api.dom('#list').scrollTop == 0) {
+                vm.getNextPage();
+            }
+        });
+
+        // api.setRefreshHeaderInfo({
+        //     loadingImg: 'widget://image/loading_more.gif',
+        //     bgColor: '#ccc',
+        //     textColor: '#fff',
+        //     textDown: '下拉刷新...',
+        //     textUp: '松开刷新...'
+        // }, function(ret, err) {
+        //     vm.getNextPage();
+        //    	api.refreshHeaderLoadDone()
+        // });
+    };
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '邀请好友',
+            chatContent: '',
+            userInfo: {},
+            friendId: 0,
+            friendImage: '',
+            listEndVisible: false,
+            toBottom: true,// 是否滚动到底部
+            needProgress: false,// 是否显示加载条
+            chatList: [],
+            page: {
+                current: 1,
+                size: 10,
+                pages: 0,
+                total: 0
+            },
+        },
+        methods: {
+            initData() {
+                this.userInfo = $api.getStorage('userInfo');
+                this.getChatList();
+                this.getFriendSimpleInfo();
+            },
+            inputFocus() {
+                console.log('scrollTo');
+                setTimeout(function() {
+                    $api.dom('#list').scrollTo({
+                        top: 10000,
+                        behavior: "smooth"
+                    });
+                }, 300)
+            },
+            getTimeDiff(dateStr) {
+                console.log('dateStr ' + dateStr);
+                if (dateStr == undefined || dateStr == '') {
+                    return '';
+                }
+                var formatDate = dateStr.replace(new RegExp("-","gm"),"/");
+                var dateMill = (new Date(formatDate)).getTime(); //得到毫秒数
+                return timeDiff(dateMill);
+            },
+            getFirstPage() {
+                this.listEndVisible = false;
+                this.toBottom = true;
+                this.needProgress = false;
+                this.page.current = 1;
+                this.getChatList();
+            },
+            getNextPage() {
+                if (this.page.current >= this.page.pages) {
+                    this.listEndVisible = true;
+                    return;
+                }
+                this.toBottom = false;// 滚动到顶部
+                this.needProgress = true;// 显示加载条
+                this.page.current++;
+                this.getChatList();
+            },
+            getChatList() {
+                var that = this;
+                var params = {
+                    queryParams: {
+                        srcId: that.userInfo.id + '',
+                        targetId: that.friendId + ''
+                    },
+                    page: that.page
+                }
+                console.log('params ' + JSON.stringify(params));
+                if (that.needProgress) {
+                    api.showProgress({
+                        title: '加载中...'
+                    });
+                }
+                ajaxPost('/chatMsg/getChatList', params, function(ret, err) {
+                    if (that.needProgress) {
+                        api.hideProgress();
+                    }
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.page = ret.data.page;
+
+                            // 设置最新消息之前的消息已读
+                            if (ret.data.list.length > 0) {
+                                that.setPrevMsgRead(ret.data.list[0].id);
+                            }
+
+                            // 逆序
+                            var tempList = [];
+                            for (var i = ret.data.list.length - 1; i >= 0; i--) {
+                                var item = ret.data.list[i];
+                                tempList.push(item);
+                            }
+
+                            if (that.page.current == 1) {
+                                that.chatList = tempList;
+                            } else {
+                                that.chatList.unshift.apply(that.chatList, tempList);
+                            }
+
+                            if (that.toBottom) {// 滚动到底部
+                                setTimeout(function() {
+                                    $api.dom('#list').scrollTo({
+                                        top: 100000,
+                                        behavior: "smooth"
+                                    });
+                                }, 300)
+                            } else {// 滚动到顶部
+                                setTimeout(function() {
+                                    $api.dom('#list').scrollTo({
+                                        top: 0,
+                                        behavior: "smooth"
+                                    });
+                                }, 300)
+                            }
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            setPrevMsgRead(msgId) {
+                var params = {
+                    msgId: msgId + '',
+                    type: 1
+                }
+                ajaxPost('/chatMsg/setPrevMsgRead', params, function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            // 更新首页新消息条数
+                            api.execScript({
+                                name: 'root',
+                                frameName: 'home_page',
+                                script: 'refreshNewMsgNum()'
+                            });
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            getFriendSimpleInfo() {
+                var that = this;
+                ajaxPost('/user/getSimpleInfo', that.friendId + '', function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.friendImage = ret.data.image;
+                            that.title = ret.data.nickName;
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            sendMsg() {
+                $api.dom('#msgInput').focus();// 显示输入法
+                var that = this;
+                if (that.chatContent == undefined || that.chatContent == '') {
+                    return;
+                }
+                var params = {
+                    srcId: that.userInfo.id + '',
+                    targetId: that.friendId + '',
+                    content: that.chatContent
+                }
+                console.log('params ' + JSON.stringify(params));
+                ajaxPost('/chatMsg/sendChat', params, function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.chatContent = '';
+                            that.getFirstPage();
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+
+            },
+
+        }
+    })
+
+</script>
+
+</html>

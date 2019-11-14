@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css" />
+    <style>
+        .bg {
+            position: fixed;
+            width: 100%;
+            /*height:100%;*/
+            /*height: 100%;*/
+        }
+
+        .inform {
+            /*width: 14.3rem;*/
+            border-radius: 3rem;
+            background-color: #F5F5F5;
+            opacity: 0.7;
+            text-align: left;
+        }
+        /*男*/
+
+        .recommend1 {
+            width: 100%;
+            height: 5rem;
+            background-color: #58587F;
+            border-radius: 0.75rem;
+            margin: 1rem 0 0.5rem 0;
+            color: var(--theme-color);
+            font-size: 0.6rem;
+        }
+        /*女*/
+
+        .recommend2 {
+            width: 100%;
+            height: 5rem;
+            background-color: #FDA4BA;
+            border-radius: 0.75rem;
+            margin: 1rem 0 0.5rem 0;
+            color: var(--theme-color);
+            font-size: 0.6rem;
+        }
+        /*消息*/
+
+        .icon_news {
+            width: 0.9rem;
+            height: 0.9rem;
+            background-color: #E51C23;
+            border-radius: 50%;
+            font-size: 0.6rem;
+            color: var(--theme-color);
+            text-align: center;
+            ;
+            line-height: 0.9rem;
+            position: absolute;
+            top: -0.5rem;
+            right: 0;
+        }
+
+        .user_photo {
+            width: 3rem;
+            height: 3rem;
+            background-color: var(--theme-color);
+            border-radius: 50%;
+            align-items: center;
+            margin: 0 1rem;
+        }
+
+        .banner_01 {
+            width: 100%;
+            border-radius: 0.75rem 0.75rem 0 0;
+            background-color: var(--theme-color);
+            padding: 0.65rem 0.55rem 1rem 0.7rem;
+        }
+
+        .banner_01_set {
+            font-size: 0.6rem;
+            color: var(--theme-black);
+            /*height: 1.25rem;
+            width: 2.5rem;*/
+            padding: 0.2rem 0.6rem;
+            border-radius: 1rem;
+            background-color: #E0E0E0;
+        }
+
+        .banner_02 {
+            width: 100%;
+            border-radius: 0 0 0.75rem 0.75rem;
+            background-color: var(--theme-black);
+            padding: 1rem 0.55rem 1rem 0.7rem;
+        }
+
+        .time {
+            background-color: var(--theme-black);
+            padding: 0.2rem;
+            color: var( --theme-grey);
+            width: 100%;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: middle;
+            -ms-flex-align: middle;
+            align-items: middle;
+            overflow: auto;
+        }
+
+        .month_body {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: middle;
+            -ms-flex-align: middle;
+            align-items: middle;
+            overflow: auto;
+        }
+
+        .month {
+            margin-bottom: 0.2rem;
+            width: 5.8rem;
+            -ms-flex-negative: 0;
+            flex-shrink: 0;
+        }
+
+        .month p {
+            margin-left: 0.21rem;
+        }
+
+        .day {
+            font-size: 0.43rem;
+            width: 0.65rem;
+            height: 0.65rem;
+            line-height: 0.65rem;
+            text-align: center;
+            border-radius: 0.1rem;
+            background-color: #757575;
+            color: var(--theme-grey);
+            float: left;
+            margin-left: 0.17rem;
+            margin-bottom: 0.17rem;
+        }
+
+        .day2 {
+            font-size: 0.43rem;
+            width: 0.65rem;
+            height: 0.65rem;
+            line-height: 0.65rem;
+            text-align: center;
+            border-radius: 0.1rem;
+            background-color: var(--theme-color);
+            color: var(--theme-black);
+            float: left;
+            margin-left: 0.17rem;
+            margin-bottom: 0.17rem;
+        }
+
+        .banner_03 {
+            margin-top: 0.5rem;
+            width: 100%;
+            border-radius: 0.75rem;
+            background-color: var(--theme-color);
+            padding: 0.65rem 0.55rem 0.5rem 0.7rem;
+        }
+
+        .banner_03_in {
+            color: var(--theme-color);
+            background-color: #FF4081;
+            border-radius: 1rem;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.6rem;
+        }
+
+        .banner_03_button {
+            color: var(--theme-color);
+            height: 1.1rem;
+            width: 2.2rem;
+            text-align: center;
+            line-height: 1.1rem;
+            border-radius: 1rem;
+            margin-left: 1.1rem;
+        }
+
+        .banner_04 {
+            margin-top: 0.5rem;
+            width: 100%;
+            border-radius: 0.75rem;
+            background-color: var(--theme-color);
+            padding: 0.65rem 0.55rem 1rem 0.7rem;
+        }
+
+        .banner_04_kind {
+            background-color: var(--theme-black);
+            border-radius: 1rem;
+            color: var(--theme-color);
+            /*padding: 0.2rem 0.4rem;*/
+            height: 1rem;
+            padding: 0 0.5rem;
+            line-height: 1rem;
+            font-size: 0.5rem;
+        }
+
+        .question {
+            width: 2.5rem;
+            height: 2.5rem;
+            background-color: #3AB2BF;
+            border-radius: 50%;
+            color: var(--theme-color);
+            font-size: 0.6rem;
+            text-align: center;
+            padding: 0.3rem 0.4rem;
+            opacity: 0.5;
+            position: fixed;
+            right: 0.65rem;
+            bottom: 0.55rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" style="">
+        <div class="bg">
+            <img :src="userInfo.cover" alt="" style="width:100%;height:100%;">
+        </div>
+        <div class='base-padding' style="position:absolute;">
+            <!--  icon图标和消息板块-->
+
+            <div class='flex-col' style="height:21rem; overflow:hidden;">
+                <!-- icon图标 -->
+                <div class="flex-row" style='margin-top:1.9rem;' @click='add'>
+                    <div class="flex-1"></div>
+                    <div>
+                        <img src="../../image/homeIcon-01.png" alt="" style="width:1.75rem;height:1.75rem;">
+                    </div>
+                </div>
+                <!-- 消息界面3 -->
+                <div class="flex-row" style="margin-top:1.5rem;" >
+                    <div class="flex-1"></div>
+                    <div style="position:relative;" @click = 'gotoMsgList'>
+                        <div class="icon_news" v-text='newMsgNum' v-if='newMsgNum > 0'></div>
+                        <img src="../../image/homeIcon-02.png" alt="" style="width:1.75rem;height:1.75rem;">
+                    </div>
+                </div>
+                <div class="flex-row" style="margin-top:1.5rem;" >
+                    <div class="flex-1"></div>
+                    <img src="../../image/homeIcon-03.png" @click='gotoSelectMedia' style="width:1.75rem;height:1.75rem;">
+                </div>
+                <div class="flex-row" style="margin-top:1.5rem; " @click="setting" >
+                    <div class="flex-1"></div>
+                    <img src="../../image/homeIcon-04.png" alt="" style="width:1.75rem;height:1.75rem;">
+                </div>
+                <!-- 通知 -->
+                <div class="flex-row inform" style="margin-top: auto; align-items:center;padding:0.35rem 0rem 0.35rem 0.4rem;"
+                    v-if='socketMsg.type != ""' @click='msgNotifyClick'>
+                    <div style="padding:0.15rem;background-color:#ffffff;border-radius:50%;margin-right:0.3rem;">
+                        <img src="../../image/home-inform.png" style="width:0.75rem;height:0.75rem;">
+                    </div>
+                    <div style="font-size:0.7rem;color:var(--theme-black);" >
+                        <span v-text='getTimeDiff(socketMsg.createTime) + "/来自"'></span>
+                        <span style="color:#F82AA5;" v-text='"#" + socketMsg.srcName'>#彩虹姑娘ABC</span>
+                        <!-- 消息类型，1单聊，2加好友申请，3练琴邀请，4拒绝加好友，5同意加好友，6系统消息，7表情，8同意练琴邀请，9拒绝练琴邀请 -->
+                        <span v-if='socketMsg.type == 1'>的聊天消息</span>
+                        <span v-if='socketMsg.type == 2'>的加好友请求</span>
+                        <span v-if='socketMsg.type == 3'>的练琴邀请</span>
+                        <span v-if='socketMsg.type == 4'>已拒绝加好友</span>
+                        <span v-if='socketMsg.type == 5'>已同意加好友</span>
+                        <span v-if='socketMsg.type == 8'>已同意练琴邀请</span>
+                        <span v-if='socketMsg.type == 9'>已拒绝练琴邀请</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 介绍 -->
+            <div class="flex-row" style="align-items:center;" :class="{'recommend1':userInfo.sex==1,'recommend2':userInfo.sex==2}">
+                <div class='flex-row user_photo' style="">
+                    <img :src='userInfo.image' alt="" style="width:2.5rem;height:2.5rem; border-radius: 50%; margin:0 auto;">
+                </div>
+                <div class="">
+                    <div class="flex-row" style="font-size:1.25rem;font-weight:700;" v-text='userInfo.nickName'></div>
+                    <div class="flex-row">
+                        <span v-text="userInfo.age+'岁·'"></span>
+                        <span v-text="userInfo.provinceName+userInfo.cityName"></span>
+                    </div>
+                    <div class="flex-row" v-text='userInfo.sign'></div>
+                </div>
+            </div>
+
+            <div class="banner_01" style="">
+                <div class="flex-row" style='align-items:center;margin-bottom:0.65rem'>
+                    <div class="flex-col" style="width:1.2rem;font-size:0.6rem;color:var(--theme-grey);">
+                        目前学习
+                    </div>
+                    <div class="flex-col" style='font-size:1.25rem;color:var(--theme-black);font-weight:700;margin-left:0.4rem;' v-text="currentPlan.instrumentName">
+                    </div>
+                    <div class="flex-1"></div>
+                    <div class='banner_01_set' @click="gotoPlan">设置</div>
+                </div>
+                <div class="grey-line"></div>
+                <div class="flex-row" style="margin-top:1rem;font-size:0.6rem;color:var(--theme-grey);">
+                    目前学习 (练习) 曲目
+                </div>
+                <div class="flex-row" style="font-size:0.8rem;color:var(--theme-black);margin-top:0.7rem;">
+                    <span v-text="currentPlan.song">小奏鸣曲(第二乐章)</span>
+                    <!-- <span style="margin-left:1.3rem;">F大调歌调</span> -->
+                </div>
+            </div>
+            <div class="banner_02" style="">
+                <div class="flex-row" style="font-size:0.6rem;">
+                    <div class="flex-col" style="width:50%">
+                        <div class="flex-row" style="color:#cecece">
+                            <span style="margin-right:0.25rem;">练琴计划</span>
+                            <span>(天)</span>
+                        </div>
+                        <div class="flex-row" style="font-size:1.5rem;font-weight:700;color:#ffffff;">
+                            <span v-if='currentPlan.practiceDateList' v-text="currentPlan.practiceDateList.length">1</span>
+                            <span v-if='currentPlan.practiceDateList == undefined' >0</span>
+                            <span style="margin:0 0.3rem;">/</span>
+                            <span v-if='currentPlan.period != undefined' v-text='currentPlan.period'>30</span>
+                            <span v-if='currentPlan.period == undefined' >0</span>
+                        </div>
+                    </div>
+                    <div class="flex-col" style="width:50%">
+                        <div class="flex-row" style="color:#cecece">
+                            <span style="margin-right:0.25rem;">练琴时长</span>
+                            <span>(分钟)</span>
+                        </div>
+                        <div v-if='currentPlan.practicePeriod != undefined'
+                            class="flex-row" style="font-size:1.5rem;font-weight:700;color:#ffffff;"
+                            v-text="currentPlan.practicePeriod">
+                        </div>
+                        <div v-if='currentPlan.practicePeriod == undefined'
+                            class="flex-row" style="font-size:1.5rem;font-weight:700;color:#ffffff;">
+                            0
+                        </div>
+                    </div>
+                </div>
+                <div class="grey-line" style="background-color:#686868;"></div>
+                <div class="flex-row" style="font-size:0.6rem;color:#cecece;margin:0.6rem 0;o">
+                    <span>心愿礼物</span>
+                    <span style="margin-left:1rem;" v-text="currentPlan.reward">香港迪士尼玩一天</span>
+                </div>
+                <div class="grey-line" style="background-color:#686868;"></div>
+                <!-- 日期 -->
+                <div class="time">
+                    <div v-for='(yearItem,yearIndex) in currentPlan.yearList'>
+                        <div style="font-size:0.7rem;" v-text='yearItem.year'></div>
+                        <div class="month_body">
+                            <div class="month" v-for='(monthItem, monthindex) in yearItem.monthList'>
+                                <p v-text="monthItem+'月'"></p>
+                                <!-- 28天的月份 -->
+                                <div class="day" v-if="monthItem == 2"
+                                    v-bind:class="{'day2':hasRecord(yearItem.year,monthItem,dayItem)}"
+                                    v-for='(dayItem, dayIndex) in 28' v-text='dayItem'></div>
+                                <div class="day" v-if="monthItem == 2" v-for='(dayItem,dayIndex) in 7'></div>
+                                <!-- 31天的月份 -->
+                                <div class="day" v-if="monthItem ==1 || monthItem == 3 || monthItem ==5 || monthItem == 7 || monthItem== 8 || monthItem == 10 || monthItem == 12"
+                                    v-bind:class="{'day2':hasRecord(yearItem.year,monthItem,dayItem)}"
+                                    v-for='(dayItem,dayIndex) in 31' v-text='dayItem'>
+                                </div>
+                                <div class="day" v-if="monthItem ==1 || monthItem == 3 || monthItem ==5 || monthItem == 7 || monthItem== 8 || monthItem == 10 || monthItem == 12"
+                                    v-for='(dayItem,dayIndex) in 4'>
+                                </div>
+                                <!-- 30天的月份 -->
+                                <div class="day" v-if="monthItem == 4 || monthItem == 6 || monthItem == 9|| monthItem == 11 "
+                                    v-bind:class="{'day2':hasRecord(yearItem.year,monthItem,dayItem)}"
+                                    v-for='(dayItem,dayIndex) in 30' v-text='dayItem'>
+                                </div>
+                                <div class="day" v-if="monthItem == 4 || monthItem == 6 || monthItem == 9|| monthItem == 11 "
+                                    v-for='(dayItem,dayIndex) in 5'>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-row">
+                    <div class="flex-1"></div>
+                    <div style="color:#cecece;font-size:0.6rem;" @click='previous'>查看过往计划</div>
+                </div>
+            </div>
+            <!-- 练琴好友 -->
+            <div class="banner_03" >
+                <div class="flex-row" style="align-items:center; margin-bottom: 1rem;">
+                    <div class="flex-row" style="align-items:center;" @click='add'>
+                        <img src="../../image/add-user.png" alt="" style="width:1.2rem;height:1.2rem;">
+                        <span style="color:var(--theme-black);font-size:1.1rem;font-weight:700;margin-left:0.35rem;">练琴好友</span>
+                    </div>
+                    <div class="flex-1"></div>
+                    <div class="banner_03_in" @click='room'>进入琴房</div>
+                </div>
+                <div v-if='friendList.length > 0' v-for='(friend,friendindex) in friendList'>
+                    <div class="flex-row" style="align-items:center; margin: 0.8rem 0; font-size:0.75rem;">
+                        <img :src="friend.image"  @click='friendPage(friend)' style="width:1.5rem; height:1.5rem; border-radius: 50%;">
+                        <span  @click='friendPage(friend)' style="font-size:0.75rem;margin-left:0.4rem;color:var(--theme-black);"
+                            v-text='friend.nickName'>彩虹姑娘ABC</span>
+                        <div class="flex-1"></div>
+                        <div class="banner_03_button" style="font-size:0.5rem;background-color:#BDBDBD;" @click='deleteFriend(friend,friendindex)'>删除</div>
+                        <div class="banner_03_button" style="font-size:0.6rem;background-color:#4DBCEF;" @click='gotoChat(friend)'>聊天</div>
+                    </div>
+                    <div class="grey-line" v-if='friendindex != (friendList.length - 1)'></div>
+                </div>
+                <div class='flex-row' style="color:var(--theme-grey); font-size:0.6rem;margin:0.7rem 0;" v-if="friendList.length==0">
+                    去邀请好友一起练琴吧~
+                </div>
+            </div>
+            <div class="banner_04">
+                <div class="flex-row" style="margin-bottom:0.25rem;" @click='gotoStrangerSearch'>
+                    <img src="../../image/home_search.png" alt="" style="width:1.5rem;height:1.5rem;">
+                </div>
+                <div style="margin:0.75rem 0;" v-for='(item,index) in strangerList'>
+                    <div class="flex-row" style="color:var(--theme-black);">
+                        <div class="flex-col" style="margin-right:0.6rem;" @click='friendPage(item)'>
+                            <!-- <img src="../../image/user-photo.png" alt="" style="width:2.5rem;height:2.5rem;"> -->
+                            <img :src="item.image" alt="" style="width:2.5rem;height:2.5rem; border-radius: 50%; ">
+                        </div>
+                        <div class="flex-col" @click='friendPage(item)'>
+                            <div class="flex-row" style="font-size:1rem;font-weight:700;" v-text='item.nickName'></div>
+                            <div class="flex-row" style="font-size:0.6rem;">
+                                <span v-text="item.age+'岁·'"> </span>
+                                <span v-text="item.provinceName+item.cityName"></span>
+                            </div>
+                        </div>
+                        <div class="flex-1"></div>
+                        <div class="flex-col" style="margin-top:0.4rem;">
+                            <!--  女-->
+                            <div class="flex-row" style="align-items:center;" v-if='item.sex==2' @click="addFriend(item)">
+                                <img src="../../image/home_female.png" alt="" style="width:0.75rem;height:0.75rem;">
+                                <span style="font-size:0.6rem;color:#FDA4BA;margin-left:0.25rem;">加好友</span>
+                            </div>
+                            <!-- 男 -->
+                            <div class="flex-row" style="align-items:center;" v-if='item.sex==1' @click="addFriend(item)">
+                                <img src="../../image/home_male.png" alt="" style="width:0.75rem;height:0.75rem;">
+                                <span style="font-size:0.6rem;color:#58587F;margin-left:0.25rem;">加好友</span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="flex-row" style="margin-top:0.4rem; font-size:0.7rem; " v-if='item.currentPlan != undefined'>
+                        <div class='banner_04_kind' v-text="item.currentPlan.instrumentName"></div>
+                        <span style="font-weight:700;margin-left: 0.5rem;">目前练习</span>
+                        <span v-text="'《'+item.currentPlan.song+'》'"></span>
+                    </div>
+                    <div class="grey-line" style="margin-top:0.75rem"></div>
+                </div>
+                <div @click='gotoStrangerSearch' style="font-size:0.7rem;color:#515151;text-align:center;">~去发现更多练琴小伙伴 go go ~</div>
+            </div>
+
+            <div style="color:var(--theme-grey); font-size:0.6rem;text-align:center;margin:0.7rem 0;" >
+                我也是有底线的哦~~
+            </div>
+
+        </div>
+        <!-- 问题反馈 -->
+        <div class='question ' @click='gotoSuggestion'>
+            问题反馈
+        </div>
+    </div>
+
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js"></script>
+<script type="text/javascript" src="../../script/aui-toast.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    var exitFlag = false;
+
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        // $api.fixStatusBar($api.dom('header'));
+        // $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+
+        // 这里不能直接对vm.userInfo赋值，因为如果为空，会导致userInfo.cover空指针，虽然界面没显示，但已执行v-text的数据绑定
+        var cacheUserInfo = $api.getStorage('userInfo');
+        console.log('' + JSON.stringify(cacheUserInfo));
+        if (cacheUserInfo == ''|| cacheUserInfo == undefined) {
+            api.openWin({
+                name: 'phone_login',
+                url: '../login/phone_login.html',
+                pageParam: {
+                }
+            });
+            return;
+        }
+
+        vm.userInfo = $api.getStorage('userInfo');
+
+        // 初始化socket，必须先检查userInfo是否为空，为空时不能初始化
+        api.execScript({
+            name: 'root',
+            script: 'initSocket("' + vm.userInfo.id + '")'
+        });
+
+        vm.initData();
+
+        // socket消息
+        api.addEventListener({
+            name: 'newSocketMsg'
+        }, function(ret, err) {
+            console.log('home_page receive msg ' + JSON.stringify(ret));
+            vm.handleMsg(ret.value);
+        });
+
+        // 界面刷新，不能加刷新，会导致每次回到首页时，屏幕跳到顶部
+        api.addEventListener({
+            name:'viewappear'
+        }, function(ret, err){
+           // vm.initData()
+        });
+
+        // 返回键退出
+        api.addEventListener({
+            name:'keyback'
+        }, function(ret, err){
+            console.log('keyback');
+            console.log('exitFlag ' + exitFlag);
+            if (exitFlag == true) {
+                console.log('showDialog');
+                api.closeWidget({
+                    silent : true
+                });
+                return;
+            }
+            exitFlag = true;
+            api.toast({
+                msg:'再次点击退出应用',
+                location: 'middle'
+            });
+            setTimeout(function() {
+                exitFlag = false;
+            }, 2000);
+        });
+
+        // 返回键退出
+        if (api.systemType == 'ios') {
+            api.addEventListener({
+                name:'swiperight'
+            }, function(ret, err){
+                if (exitFlag == true) {
+                    console.log('showDialog');
+                    api.closeWidget({
+                        silent : true
+                    });
+                    return;
+                }
+                exitFlag = true;
+                api.toast({
+                    msg:'再次点击退出应用',
+                    location: 'middle'
+                });
+                setTimeout(function() {
+                    exitFlag = false;
+                }, 2000);
+            });
+        }
+
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/loading_more.gif',
+            bgColor: '#ccc',
+            textColor: '#fff',
+            textDown: '下拉刷新...',
+            textUp: '松开刷新...'
+        }, function(ret, err) {
+            vm.initData();
+           	api.refreshHeaderLoadDone()
+        });
+
+        api.addEventListener({
+            name:'resume'
+        }, function(ret, err){
+            if ($api.getStorage('userInfo')) {// 要加这个判断，否则微信登录时，会触发resume，而此时userInfo为空，调用initData中的请求会空指针
+                vm.initData();
+            }
+        });
+    };
+
+    function requeryCurPlan() {
+        console.log('requeryCurPlan');
+        vm.userInfo = $api.getStorage('userInfo');
+        vm.getCurrentPlan();
+    }
+
+    function refreshFriendList() {
+        console.log('refreshFriendList');
+        vm.getFriendList();
+        vm.getStrangerList();
+    }
+
+    function updateCoverFunc(coverUrl) {
+        var decodeUrl = decodeURI(coverUrl)
+        console.log('decodeUrl ' + decodeUrl);
+        console.log('updateCoverFunc ' + decodeUrl);
+        // alert(coverUrl)
+        vm.updateCover(decodeUrl);
+    }
+
+    function updateImageFunc(imageUrl) {
+        console.log('updateImageFunc ' + imageUrl);
+        // alert(coverUrl)
+        vm.userInfo.image = imageUrl;
+    }
+
+    function refreshUserInfo() {
+        console.log('refreshUserInfo');
+        vm.userInfo = $api.getStorage('userInfo');
+    }
+
+    function refreshNewMsgNum() {
+        console.log('refreshNewMsgNum');
+        vm.getNewMsgNum();
+    }
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '基本模板',
+            newMsgNum: 0,
+            socketMsg: {
+                srcId: '',
+                targetId: '',
+                type: '',
+                content: ''
+            },
+            strangerPage: {
+                current: 1,
+                size: 5,
+                pages: 0,
+                total: 0
+            },
+            strangerList: [],
+            friendList: [],
+            userInfo: {},
+            currentPlan: {
+                period: 0,
+                practicePeriod: 0,
+            },
+        },
+        // 打开新页面时怎么让页面自动滚到顶部
+        updated() {
+            window.scroll(0, 0);
+        },
+        methods: {
+            handleMsg(msgData) {
+                console.log('' + JSON.stringify(msgData));
+                // 消息类型，1单聊，2加好友申请，3练琴邀请，4拒绝加好友，5同意加好友，6系统消息，7表情
+                if (msgData.type == 7) {// 表情在视频聊天界面处理
+                    return;
+                } else if (msgData.type == 5) {// 同意加好友
+                    this.getFriendList();
+                    this.getStrangerList();
+                }
+                this.socketMsg = msgData;
+                console.log('' + JSON.stringify(this.socketMsg));
+                this.getNewMsgNum();// 查询未读消息条数
+            },
+            getTimeDiff(dateStr) {
+                if (dateStr == undefined || dateStr == '') {
+                    return '';
+                }
+                var formatDate = dateStr.replace(new RegExp("-","gm"),"/");
+                var dateMill = (new Date(formatDate)).getTime(); //得到毫秒数
+                return timeDiff(dateMill);
+            },
+            gotoSelectMedia() {
+                api.openWin({
+                    name: 'select_media',
+                    url: '../photo/select_media.html',
+                    pageParam: {
+                        publishType: 'userCover',
+                        imageOnly: true,
+                        addMode: false
+                    },
+                    reload: false
+                });
+            },
+            msgNotifyClick() {
+                // 练琴邀请
+                // 消息类型，1单聊，2加好友申请，3练琴邀请，4拒绝加好友，5同意加好友，6系统消息，7表情，8同意练琴邀请，9拒绝练琴邀请
+                if (this.socketMsg.type == 1) {
+                    api.openWin({
+                        name: 'chat',
+                        url: '../msg/chat.html',
+                        pageParam: {
+                            targetId: this.socketMsg.srcId
+                        },
+                        reload: true
+                    });
+                } else {
+                    this.gotoMsgList();
+                }
+            },
+            initData() {
+                this.userInfo = $api.getStorage('userInfo');
+                this.getUserInfo();
+                this.getStrangerList();
+                this.getFriendList();
+                this.getCurrentPlan();
+                this.getLatestReceiveMsg();
+                this.getNewMsgNum();
+                this.checkVersion();
+            },
+            setting() {
+                api.openWin({
+                    name: 'user_setting',
+                    url: '../setting/user_setting.html',
+                    pageParam: {
+                        name: 'test'
+                    }
+                });
+            },
+            gotoPlan() {
+                api.openWin({
+                    name: 'add_plan',
+                    url: './add_plan.html',
+                    pageParam: {
+                        name: 'test'
+                    }
+                });
+            },
+            getUserInfo() {
+                var that = this;
+                ajaxPost('/user/getDetail', {}, function(ret, err) {
+                    console.log('' + JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.userInfo = ret.data;
+                            $api.setStorage('userInfo', ret.data);
+                        } else if (ret.returnCode == '-99') { // token过期，跳转登录
+                            api.openWin({
+                                name: 'phone_login',
+                                url: '../login/phone_login.html'
+                            });
+                            return;
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            getLatestReceiveMsg() {
+                var that = this;
+                ajaxPost('/chatMsg/getLatestReceiveMsg', {}, function(ret, err) {
+                    console.log('getLatestReceiveMsg ' + JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            if (ret.data) {
+                                if (ret.data.type != 7) {// 7是表情，不用处理
+                                    that.socketMsg = ret.data;
+                                }
+                            }
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            getNewMsgNum() {
+                var that = this;
+                ajaxPost('/chatMsg/getNewMsgNum', {}, function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            if (ret.data != undefined) {
+                                that.newMsgNum = ret.data;
+                            }
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            getStrangerList() {
+                var that = this;
+                console.log('' + JSON.stringify(that.userInfo));
+                var params = {
+                    queryParams: {
+                        userId: that.userInfo.id// 要从userInfo中取值，不能取api.getStorage中的userId，读到的是字符串类型
+                    },
+                    page: that.strangerPage
+                };
+                console.log(JSON.stringify(params));
+                ajaxPost('/friend/getStrangerList', params, function(ret, err) {
+                    // console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.strangerPage = ret.data.page;
+                            that.strangerList = ret.data.list;
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            getFriendList() {
+                var that = this;
+                ajaxPost('/friend/getFriendList', that.userInfo.id + '', function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.friendList = ret.data;
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            updateCover(coverUrl) {
+                console.log('updateCover ' + coverUrl);
+                var that = this;
+                ajaxPost('/user/updateCover', coverUrl, function(ret,arr){
+                  console.log(JSON.stringify(ret));
+                  if(ret){
+                        if(ret.returnCode == '1'){
+                            that.userInfo.cover = coverUrl;
+                            setTimeout(function() {
+                                console.log('setTimeout getUserInfo');
+                                that.getUserInfo();
+                            }, 1000)
+                        } else {
+                          api.toast({
+                              msg: ret.returnMsg,
+                              location: 'middle'
+                          });
+                        }
+                  } else {
+                    api.toast({
+                        msg: JSON.stringify(err),
+                        location: 'middle'
+                    });
+                  }
+                })
+            },
+            // 获取当前计划等详细信息
+            getCurrentPlan() {
+                var that = this;
+                ajaxPost('/plan/getUserCurrentPlan', that.userInfo.id + '', function(ret, err) {
+                    console.log('' + JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            if (ret.data) {
+                                that.currentPlan = ret.data;
+                            }
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            gotoChat(item) {
+                api.openWin({
+                    name: 'chat',
+                    url: '../msg/chat.html',
+                    pageParam: {
+                        targetId: item.id,
+                    },
+                    reload: true
+                });
+            },
+            // 删除好友
+            deleteFriend(item, index) {
+                var that = this;
+                var dialog = new auiDialog();
+                dialog.alert({
+                    // title:"弹出提示",
+                    msg: '确定要删除好友吗',
+                    buttons: ['取消', '确定']
+                }, function(ret) {
+                    // console.log(JSON.stringify(ret))
+                    if (ret.buttonIndex == 2) {
+                        api.showProgress({
+                            title: '加载中...'
+                        });
+                        ajaxPost('/friend/delete', item.id + '', function(ret, err) {
+                            api.hideProgress();
+                            if (ret) {
+                                // console.log(JSON.stringify(ret));
+                                if (ret.returnCode == '1') {
+                                    that.friendList.splice(index, 1);
+                                } else {
+                                    api.toast({
+                                        msg: ret.returnMsg,
+                                        location: 'middle'
+                                    });
+                                }
+                            } else {
+                                api.toast({
+                                    msg: JSON.stringify(err),
+                                    location: 'middle'
+                                });
+                            }
+                        })
+                    }
+                })
+            },
+            // 添加好友
+            addFriend(item) {
+                // console.log(JSON.stringify(item));
+                var that = this;
+                if (item.isFriendOpen == 1) {
+                    api.openWin({
+                        name: 'add_friend',
+                        url: '../friend/add_friend.html',
+                        pageParam: {
+                            // name: 'test'
+                            targetId: item.id,
+                        }
+                    });
+                } else {
+                    api.toast({
+                        msg: '对方拒绝陌生人加好友',
+                        location: 'middle'
+                    });
+                }
+            },
+            friendPage(item) {
+                console.log(item.id);
+                api.openWin({
+                    name: 'friend_page',
+                    url: './friend_page.html',
+                    pageParam: {
+                        friendUserId: item.id
+                    },
+                    // reload: true
+                });
+            },
+            hasRecord(year, month, day) {
+                if (month < 10) {
+                    month = '0' + month;
+                }
+                if (day < 10) {
+                    day = '0' + day;
+                }
+                var dayStr = year + '-' + month + '-' + day
+                // console.log('' + dayStr);
+                if (this.currentPlan.practiceDateList.indexOf(dayStr) >= 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+            room() {
+                api.openWin({
+                    name: 'waiting_room',
+                    url: '../room/waiting_room.html',
+                    pageParam: {
+                        name: 'test'
+                    }
+                });
+            },
+            // 消息中心
+            gotoMsgList() {
+                this.newMsgNum = 0;
+                api.openWin({
+                    name: 'msg_list',
+                    url: '../msg/msg_list.html',
+                    pageParam: {
+                        userId: this.userInfo.id
+                    },
+                    reload: true
+                });
+            },
+            // 邀请好友
+            add() {
+                api.openWin({
+                    name: 'share_win',
+                    url: './share_win.html',
+                    pageParam: {
+                        userId: this.userInfo.id
+                    }
+                });
+            },
+            previous() {
+                api.openWin({
+                    name: 'history_plan',
+                    url: './history_plan.html',
+                    pageParam: {
+                        userId: this.userInfo.id
+                    }
+                });
+            },
+            gotoStrangerSearch() {
+                api.openWin({
+                    name: 'stranger_search',
+                    url: '../friend/stranger_search.html',
+                    pageParam: {
+                        userId: this.userInfo.id
+                    }
+                });
+            },
+            gotoSuggestion() {
+                api.openWin({
+                    name: 'suggestion',
+                    url: '../setting/suggestion.html',
+                    pageParam: {
+                    }
+                });
+            },
+            checkVersion() {
+                var that = this;
+                ajaxPost('/systemConfig/checkVersion', {}, function(ret, err) {
+                    console.log('checkVersion ' + JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            var localVersion = api.appVersion;
+                            console.log('localVersion ' + localVersion);
+                            var needUpdate = false;
+                            var url;
+                            if (api.systemType == 'ios') {
+                                url = ret.data.iosUrl;
+                                if (localVersion < ret.data.iosVersion) {
+                                    needUpdate = true;
+                                }
+                            } else {
+                                url = ret.data.androidUrl;
+                                if (localVersion < ret.data.androidVersion) {
+                                    needUpdate = true;
+                                }
+                            }
+                            var forceUpdate = ret.data.forceUpdate;
+
+                            if (needUpdate) {
+                                if (forceUpdate == '0') {
+                                    var dialog = new auiDialog({});
+                                    dialog.alert({
+                                        msg: '有新版本，是否升级?',
+                                        buttons:['取消','确定']
+                                    }, function(ret, err) {
+                                        if (ret.buttonIndex == 2) {
+                                            that.updateVersion(url);
+                                        }
+                                    })
+                                } else {
+                                    var dialog = new auiDialog({});
+                                    dialog.alert({
+                                        msg: '有新版本，需升级后才能使用?',
+                                        buttons:['确定']
+                                    }, function(ret, err) {
+                                        that.updateVersion(url);
+                                    })
+                                }
+                            }
+                        } else {
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            updateVersion(url) {
+                if (api.systemType == 'ios') {
+                    var dialog = new auiDialog({});
+                    dialog.alert({
+                        msg: '请到appStore升级',
+                        buttons:['取消','确定']
+                    }, function(ret, err) {
+                    })
+                    return;
+                }
+                var savePath = api.fsDir;
+                api.showProgress({
+                    title: '下载中...',
+                    modal: true
+                });
+                api.download({
+                    url: url,
+                    report: false,
+                    cache: true,
+                    allowResume: true
+                }, function(ret, err) {
+                    api.hideProgress();
+                    //console.log(JSON.stringify(ret));
+                    if (ret.state == 1) {
+                        api.installApp({
+                            appUri: ret.savePath
+                        });
+                    } else {
+                        api.toast({
+                            msg: ret.msg,
+                            location: 'middle'
+                        });
+                    }
+                });
+            },
+        }
+    })
+</script>
+
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <style>
+        input[type=text] {
+            font-size: 0.8rem;
+        }
+        input[type=text]:focus {
+            font-size: 0.8rem;
+        }
+        input::-webkit-input-placeholder{
+          font-size: 0.8rem;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="app" style="overflow: hidden;">
+        <header class="header theme-bg header-fix flex-row">
+            <img src="../../image/add_delete.png" alt="" style="width:1.25rem; height:1.25rem;" @click='goBack'>
+            <span v-text='title' style="font-size: 1.2rem; margin-left: 0.5rem; "></span>
+        </header>
+        <!--高度至少1px才能有效偏移-->
+        <div id='first-el' style="height: 1px; "></div>
+
+        <div class="base-padding" style="font-size: 0.8rem; ">
+            <div class="flex-row" @click='gotoSelectMedia' style="border-bottom: 1px solid #EEEEEE ;align-items:center;padding: 0.65rem 0 0.8rem 0;">
+                <div class="">
+                    更换头像
+                </div>
+                <div class="flex-1"></div>
+                <img :src="userInfo.image" alt="" style="width: 2.5rem; height: 2.5rem; border-radius:50%;">
+            </div>
+            <div class="flex-row" style="border-bottom: 1px solid #EEEEEE ;align-items:center; padding: 0.35rem 0;">
+                <div class="">昵称</div>
+                <div class="flex-1"></div>
+                <div class="">
+                    <input type="text" name="" v-model='userInfo.nickName' @focus='nickNameFocus'
+                        placeholder="15个内中英文、数字、横线、减号" style="text-align:right;color:#9E9E9E; ">
+                </div>
+            </div>
+            <div class="flex-row" @click='sexOptionVisible = true' style="border-bottom: 1px solid #EEEEEE ;align-items:center; padding: 0.35rem 0;">
+                <div class="">性别</div>
+                <div class="flex-1"></div>
+                <div class="" style="text-align:right;color:#9E9E9E;" >
+                    <span v-if='userInfo.sex == 1'>男</span>
+                    <span v-if='userInfo.sex == 2'>女</span>
+                </div>
+            </div>
+            <div class="flex-row" @click='showBirthOption' style="border-bottom: 1px solid #EEEEEE ;align-items:center; padding: 0.8rem 0;">
+                <div class="">生日</div>
+                <div class="flex-1"></div>
+                <span style="margin-right:0;color:var(--theme-grey);" v-text='userInfo.birthdayShort'></span>
+            </div>
+            <div class="flex-row" @click='showCity' style="border-bottom: 1px solid #EEEEEE ;align-items:center; padding: 0.8rem 0;">
+                <div class="">城市</div>
+                <div class="flex-1"></div>
+                <span style="margin-right:0rem;color:var(--theme-grey);" v-text="userInfo.provinceName + '&sdot;' + userInfo.cityName"></span>
+            </div>
+            <!-- <div class="flex-row" style="border-bottom: 1px solid #EEEEEE ;align-items:center; padding: 0.35rem 0;">
+                <div class="">
+                    年龄
+                </div>
+                <div class="flex-1"></div>
+                <div class="">
+                    <input type="text" name="" value="" placeholder="匹配更多同龄朋友" style="text-align:right;color:#9E9E9E;font-size: 0.9rem;">
+                </div>
+            </div> -->
+            <div class=" " style="margin-top: 0.8rem;">
+                <div class="">
+                    个性签名
+                </div>
+            </div>
+            <div class=" " style="align-items:center; padding: 0rem 0 0.35rem;">
+                <input type="text" name="" v-model='userInfo.sign' placeholder="签名限定30个字内">
+            </div>
+            <div class="" @click="modification" style="background-color:#3AB2BF;text-align:center;color:white;height: 2rem;line-height:2rem;border-radius: 0.4rem;margin-top:2rem;">
+                保存
+            </div>
+        </div>
+
+        <!-- 性别 -->
+        <div class="flex-col" v-show='sexOptionVisible'
+            style="width: 100%; height: 100%; position: fixed; left: 0; top: 0; background-color: rgba(0,0,0,0.3); ">
+            <div class="" style="width: 100%; height: 16%; margin-top: auto; background-color: white; border-top-left-radius: 5px; border-top-right-radius: 5px;">
+                <div class="flex-row flex-center" @click='selectSex(1)' style="align-items: center; height: 50%; ">
+                    <span>男</span>
+                </div>
+                <div class="grey-line"></div>
+                <div class="flex-row flex-center" @click='selectSex(2)' style="align-items: center; height: 50%; ">
+                    <span>女</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        $api.fixStatusBar($api.dom('header'));
+        $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.initData();
+    };
+
+    function updateImageFunc(imageUrl) {
+        console.log('updateImageFunc ' + imageUrl);
+        vm.updateImage(imageUrl);
+    }
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '个人资料',
+            userInfo: {},
+            sexOptionVisible: false,
+        },
+        methods: {
+            initData() {
+                this.userInfo = $api.getStorage('userInfo');
+                this.getUserInfo();
+            },
+            nickNameFocus() {
+                console.log('nickNameFocus');
+                this.userInfo.nickName = '';
+            },
+            selectSex(val) {
+                this.userInfo.sex = val;
+                this.sexOptionVisible = false;
+            },
+            getUserInfo() {
+                var that = this;
+                ajaxPost('/user/get', that.userInfo.id + '', function(ret, err) {
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                             that.userInfo = ret.data;
+                             var birthday = that.userInfo.birthday;
+                             if (birthday != undefined && birthday != '') {
+                                 that.$set(that.userInfo, 'birthdayShort', birthday.substring(0, 10));
+                             }
+                             $api.setStorage('userInfo', that.userInfo);
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            gotoSelectMedia() {
+                api.openWin({
+                    name: 'select_media',
+                    url: '../photo/select_media.html',
+                    pageParam: {
+                        publishType: 'userImage',
+                        imageOnly: true,
+                        addMode: false
+                    },
+                    reload: false
+                });
+            },
+            updateImage(imageUrl) {
+                console.log('updateImage ' + imageUrl);
+                var that = this;
+                ajaxPost('/user/updateImage', imageUrl, function(ret,arr){
+                  console.log(JSON.stringify(ret));
+                  if(ret){
+                        if(ret.returnCode == '1'){
+                            that.userInfo.image = imageUrl;
+                            $api.setStorage('userInfo', that.userInfo);
+
+                            api.execScript({
+                                name: 'user_setting',
+                                script: 'refreshImage("' + imageUrl + '")'
+                            });
+                        } else {
+                          api.toast({
+                              msg: ret.returnMsg,
+                              location: 'middle'
+                          });
+                        }
+                  } else {
+                    api.toast({
+                        msg: JSON.stringify(err),
+                        location: 'middle'
+                    });
+                  }
+                })
+            },
+            showBirthOption() {
+                var that = this;
+                var UIDatePicker = api.require('UIDatePicker');
+                UIDatePicker.open({
+                    type: 'date',
+                    rowHeight:40,
+                    // date: '2000-01-01 12:00:00',
+                    maxDate:'2020-01-01 12:30:08',
+                    minDate:'1950-01-01 12:30:08',
+                    title: '选择时间',
+                    styles: {
+                        bg: 'rgba(255,255,255,1)',
+                        headerViewBackgroundColor:'rgba(255,255,255,1)',
+                        lineBackgroundColor: 'rgba(255,255,255,1)',
+                        item:{
+                            normal: '#515151',
+                            normalFont: 14,
+                            selected: '#3AB2BF',
+                            selectedFont: 17,
+                            cancelBtn:{
+                                 cancelButtonTextColor: '#1E1E1E',
+                                 cancelButtonText: '取消' ,
+                                 cancelButtonFont:17
+                             },
+                             confirmBtn:{
+                                 confirmButtonTextColor: '#1E1E1E',
+                                 confirmButtonText: '确定' ,
+                                 confirmButtonFont:17
+                             },
+                        }
+                    },
+                }, function(ret, err) {
+                    console.log('ret ' + JSON.stringify(ret) + ' err ' + JSON.stringify(err));
+                    if (ret.eventType == 'submit') {
+                        var y = ret.year;
+                        var m = ret.month < 10 ? '0' + ret.month : ret.month;
+                        var d = ret.day < 10 ? '0' + ret.day : ret.day;
+                        var birthdayShort = y + '-' + m + '-' + d;
+                        that.$set(that.userInfo, 'birthdayShort', birthdayShort);
+                    } else {
+
+                    }
+                });
+            },
+            modification() {
+                var that = this;
+                if (that.userInfo.nickName == '') {
+                    api.toast({
+                        msg: '昵称不能为空',
+                        location: 'middle'
+                    });
+                    return;
+                }
+                if (that.userInfo.birthdayShort == '' || that.userInfo.birthdayShort == undefined) {
+                    api.toast({
+                        msg: '生日不能为空',
+                        location: 'middle'
+                    });
+                    return;
+                }
+
+                api.showProgress({
+                    title: '努力加载中...'
+                });
+                that.userInfo.birthday = that.userInfo.birthdayShort + ' 00:00:00';// 接口要求的格式
+                console.log(JSON.stringify(that.userInfo));
+                ajaxPost('/user/update', that.userInfo, function(ret, err) {
+                    api.hideProgress();
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            api.toast({
+                                msg: '保存成功',
+                                location: 'middle'
+                            });
+                            // 返回计算了年龄的userInfo
+                            that.userInfo.age = ret.data.age;
+                            $api.setStorage('userInfo', that.userInfo);
+                            console.log('save userInfo ' + JSON.stringify(that.userInfo));
+                            api.execScript({
+                                name: 'root',
+                                frameName: 'home_page',
+                                script: 'refreshUserInfo();'
+                            });
+                            api.closeWin();
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            showCity() {
+                var that = this;
+                console.log('showCity');
+                var UIActionSelector = api.require('UIActionSelector');
+                UIActionSelector.open({
+                    datas: 'widget://res/city.json',
+                    layout: {
+                        row: 5,
+                        col: 3,
+                        height: 30,
+                        size: 12,
+                        sizeActive: 14,
+                        rowSpacing: 5,
+                        colSpacing: 10,
+                        maskBg: 'rgba(0,0,0,0.2)',
+                        bg: '#fff',
+                        color: '#888',
+                        // colorActive: '#f00',
+                        colorActive: '#3AB2BF',
+                        // colorSelected: '#f00'
+                        colorSelected: '#3AB2BF'
+                    },
+                    animation: true,
+                    cancel: {
+                        text: '取消',
+                        size: 12,
+                        w: 90,
+                        h: 35,
+                        bg: '#fff',
+                        bgActive: '#ccc',
+                        color: '#888',
+                        colorActive: '#fff'
+                    },
+                    ok: {
+                        text: '确定',
+                        size: 12,
+                        w: 90,
+                        h: 35,
+                        bg: '#fff',
+                        bgActive: '#ccc',
+                        color: '#888',
+                        colorActive: '#fff'
+                    },
+                    title: {
+                        text: '请选择',
+                        size: 12,
+                        h: 44,
+                        bg: '#eee',
+                        color: '#888'
+                    }
+                    // fixedOn: api.frameName
+                }, function(ret, err) {
+                    console.log('ret ' + JSON.stringify(ret));
+                    if (ret.eventType == 'ok') {
+                        console.log(JSON.stringify(ret));
+                        that.userInfo.provinceName = ret.selectedInfo[0].name;
+                        that.userInfo.cityName = ret.selectedInfo[1].name;
+                        that.userInfo.districtName = ret.selectedInfo[2].name;
+                        that.userInfo.districtCode = ret.selectedInfo[2].id;
+                    } else {
+                        console.log(JSON.stringify(err));
+                    }
+                });
+            },
+
+        }
+    })
+
+</script>
+
+</html>

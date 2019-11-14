@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <style>
+
+    </style>
+</head>
+<body>
+    <div id="app" style="overflow: hidden;">
+        <header class="header theme-bg header-fix flex-row">
+            <img src="../../image/add_delete.png" alt="" style="width:1.25rem; height:1.25rem;" @click='goBack'>
+            <span v-text='title' style="font-size: 1.2rem; margin-left: 0.5rem; "></span>
+        </header>
+        <!--高度至少1px才能有效偏移-->
+        <div id='first-el' style="height: 1px; "></div>
+
+        <div class="" style="padding:1rem 0.75rem;">
+            <span v-if='userInfo.loginType == 1'>你已使用手机号登录</span>
+            <span v-if='userInfo.loginType == 2'>你已使用密码登录</span>
+            <span v-if='userInfo.loginType == 3'>你已使用微信登录</span>
+        </div>
+        <div class="" v-if='userInfo.loginType != 3' style="background-color: #EEEEEE;padding:8px 0;align-items: center;">
+            <div class="flex-row" style="padding:0 0.75rem;">
+                <span v-text='"手机号码" + userInfo.phone'>手机号码138****6666</span>
+                <div class="flex-1"></div>
+                <div class="" style="color: #FF4081 ;" @click="gotoSetPassword">
+                    设置密码
+                </div>
+            </div>
+        </div>
+        <div class="" v-if='userInfo.loginType != 3' style="color: #FF4081;border-bottom:1px solid #EEEEEE;padding: 1rem 0 1.25rem 0;margin: 0 0.75rem;" @click="phone">
+            点击更换手机号
+        </div>
+        <div class="" v-if='userInfo.loginType == 3' style="color: #FF4081;border-bottom:1px solid #EEEEEE;padding: 1rem 0 1.25rem 0;margin: 0 0.75rem;" @click="phone">
+            点击绑定手机号
+        </div>
+        <div class="" style="padding: 1.25rem 0.75rem 1.15rem 0.75rem;color:#9E9E9E ;font-size: 0.75rem;">
+            第三方账号绑定
+        </div>
+        <div class="flex-row" style="align-items:center;padding:0 0.75rem;">
+            <span style="font-size:0.9rem;">微信</span>
+            <div class="flex-1"></div>
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-input">
+                    <input type="checkbox" class="aui-switch" v-model='wxBond' @change='checkChange()'>
+                </div>
+            </div>
+        </div>
+        <div class="" @click='logout' style="text-align:center;position: fixed;bottom: 1.5rem;width:100%;">
+            退出当前账号
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        $api.fixStatusBar($api.dom('header'));
+        $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.initData();
+    };
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '账号与安全',
+            userInfo: {},
+            wxBond: false,
+            wxUserInfo: {},
+        },
+        methods: {
+            initData() {
+                this.userInfo = $api.getStorage('userInfo');
+                if (this.userInfo.wxOpenId == undefined) {
+                    this.wxBond = false
+                } else {
+                    this.wxBond = true
+                }
+            },
+            checkChange() {
+                var that = this;
+                if (that.wxBond) {
+                    console.log('wxBond');
+                    var dialog = new auiDialog();
+                    dialog.alert({
+                        // title:"弹出提示",
+                        msg: '确定绑定微信吗',
+                        buttons: ['取消', '确定']
+                    }, function(ret) {
+                        // console.log(JSON.stringify(ret))
+                        if (ret.buttonIndex == 2) {
+                            that.getWxUserInfo()
+                        } else {
+                            that.wxBond = false;
+                        }
+                    })
+                } else {
+                    console.log('loginType ' + that.userInfo.loginType);
+                    if (that.userInfo.loginType == '3') {
+                        // api.toast({
+                        //     msg: '不能解除绑定',
+                        //     location: 'middle'
+                        // });
+                        that.wxBond = true;
+                        return;
+                    } else {
+                    }
+                }
+            },
+            getWxUserInfo() {
+                var that = this;
+                var wx = api.require('wx');
+                wx.auth({
+                    // apiKey: ''
+                }, function(ret, err) {
+                    if (ret.status) {
+                        wx.getToken({
+                            apiKey: '',
+                            apiSecret: '',
+                            code: ret.code
+                        }, function(ret, err) {
+                            if (ret.status) {
+                                wx.getUserInfo({
+                                    accessToken: ret.accessToken,
+                                    openId: ret.openId
+                                }, function(ret, err) {
+                                    if (ret.status) {
+                                        console.log(JSON.stringify(ret));
+                                        that.wxUserInfo = ret;
+                                        that.bindWx();
+                                    } else {
+                                        api.toast({
+                                            msg: JSON.stringify(err),
+                                            location: 'middle'
+                                        });
+                                    }
+                                });
+                            } else {
+                                api.toast({
+                                    msg: JSON.stringify(err),
+                                    location: 'middle'
+                                });
+                            }
+                        });
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                });
+            },
+            bindWx() {
+                var that = this;
+                ajaxPost('/user/bindWx', that.wxUserInfo, function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.wxBond = true;
+                            api.toast({
+                                msg: '绑定成功',
+                                location: 'middle'
+                            });
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            logout() {
+                api.showProgress({
+                    title: '努力加载中...'
+                });
+                ajaxPost('/user/logout',{}, function(ret, err) {
+                    api.hideProgress();
+                    if(ret){
+                        console.log(JSON.stringify(ret));
+                        if (ret.returnCode == '1') {
+                            $api.rmStorage('userInfo');
+                            $api.rmStorage('userId');
+                            $api.rmStorage('token');
+                            $api.rmStorage('rcToken');
+                            api.openWin({
+                                name: 'phone_login',
+                                url: '../login/phone_login.html',
+                                slidBackEnabled: false
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            phone(){
+                api.openWin({
+                    name: 'update_phone',
+                    url: './update_phone.html',
+                    pageParam: {
+                        name: 'test'
+                    }
+                });
+            },
+            gotoSetPassword(){
+                api.openWin({
+                    name: 'set_password',
+                    url: './set_password.html',
+                    pageParam: {
+                        name: 'test'
+                    }
+                });
+
+            },
+        }
+    })
+
+</script>
+
+</html>

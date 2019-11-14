@@ -1,0 +1,34 @@
+ <widget id="A6013376755923"  version="0.0.1">
+    <name>琴房</name>
+    <description>
+        Example For APICloud.
+    </description>
+    <author email="developer@apicloud.com" href="http://www.apicloud.com">
+        Developer
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <preference name="pageBounce" value="false"/>
+    <preference name="checkSslTrusted" value="false" />
+	<preference name="appBackground" value="rgba(0,0,0,0.0)"/>
+	<preference name="windowBackground" value="rgba(0,0,0,0.0)"/>
+	<preference name="frameBackgroundColor" value="rgba(0,0,0,0.0)"/>
+	<preference name="hScrollBarEnabled" value="false"/>
+	<preference name="vScrollBarEnabled" value="false"/>
+	<preference name="autoLaunch" value="true"/>
+	<preference name="fullScreen" value="false"/>
+	<preference name="autoUpdate" value="true" />
+	<preference name="smartUpdate" value="false" />
+	<preference name="debug" value="true"/>
+	<preference name="statusBarAppearance" value="true"/>
+
+	<permission name="readPhoneState" />
+	<permission name="camera" />
+	<permission name="record" />
+    <permission name="call"/>
+	<permission name="location" />
+	<permission name="fileSystem" />
+	<permission name="internet" />
+	<permission name="bootCompleted" />
+	<permission name="hardware" />    <meta-data         name="com.baidu.lbsapi.API_KEY"         value="FVnQDzZPB5FhhQR3tudXD6FXOoKzA0AW" />    <feature name="bmLocation">        <param name="ios_api_key" value="EeG3aN8N7VrHD1t7wXtge6ikfpf5EzPD" />    </feature>    <feature name="webSocket">        <param name="isGlobal" value="true"/>    </feature>    <feature name="tencentPush">        <param name="android_accessId" value="2100345448" />        <param name="android_accessKey" value="AJ6Y78FN6S6Q" />    </feature>    <feature name="aliPayPlus">        <param name="urlScheme" value="AliPayPlusA6013376755923" />    </feature>    <feature name="wx">        <!-- 发布账号 -->        <param name="urlScheme" value="wx569790f6ec6c06c4"/>        <param name="apiKey" value="wx569790f6ec6c06c4"/>        <param name="apiSecret" value="3700ac1bed69dd454a849fe1cf17206b"/>        <!-- 开发账号 -->        <!-- <param name="urlScheme" value="wx4aaa6c6ab16fb75b"/>        <param name="apiKey" value="wx4aaa6c6ab16fb75b"/>        <param name="apiSecret" value="e578cb7322a086996db6581c10446701"/> -->    </feature>    <feature name="wxPay">        <!-- 发布账号 -->        <param name="urlScheme" value="wx569790f6ec6c06c4"/>        <param name="apiKey" value="wx569790f6ec6c06c4"/>        <param name="apiSecret" value="3700ac1bed69dd454a849fe1cf17206b"/>        <!-- 开发账号 -->        <!-- <param name="urlScheme" value="wx4aaa6c6ab16fb75b"/>        <param name="apiKey" value="wx4aaa6c6ab16fb75b"/>        <param name="apiSecret" value="e578cb7322a086996db6581c10446701"/> -->    </feature>    <feature name="QQPlus">        <param name="urlScheme" value="tencent101785796" />        <param name="apiKey" value="101785796" />    </feature>
+</widget>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <style>
+
+</style>
+</head>
+<body>
+    <div id="app" style="overflow: hidden;">
+        <header class="header theme-bg header-fix flex-row">
+            <img src="../../image/add_delete.png" alt="" style="width:1.25rem; height:1.25rem;" @click='goBack'>
+            <span v-text='title' style="font-size: 1.2rem; margin-left: 0.5rem; "></span>
+        </header>
+        <!--高度至少1px才能有效偏移-->
+        <div id='first-el' style="height: 1px; "></div>
+        <div class="flex-row" style="align-items:center;padding: 37px 79px; 0 77px">
+            <div class="wx flex-col" style="align-items:center;" @click='shareWx'>
+                <img src="../../image/wx.jpg" alt="" style="width: 3rem;height: 3rem;margin-bottom: 23px;">
+                <span  style="font-size:14px;">微信好友</span>
+            </div>
+            <div class="flex-1">
+            </div>
+            <div class="qq flex-col" style="align-items:center;">
+            <img src="../../image/qq-icon.png" alt="" style="width: 3rem;height: 3rem;margin-bottom: 23px;">
+            <span style="font-size:14px;">QQ好友</span>
+            </div>
+
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        $api.fixStatusBar($api.dom('header'));
+        $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.userId = params.userId;
+        vm.initData();
+    };
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '邀请好友',
+            userId: 0,
+        },
+        methods: {
+            initData() {
+
+            },
+            shareWx() {
+                var wx = api.require('wx');
+                var contentUrl = shareIp + '/user?userId=' + this.userId;
+                console.log('contentUrl ' + contentUrl);
+                wx.shareWebpage({
+                    apiKey: '',
+                    scene: 'session',
+                    title: '来吖练琴',
+                    description: '练琴不再是一个人枯燥漫长的坚持',
+                    thumb: 'widget://image/logo.png',
+                    contentUrl: contentUrl
+                }, function(ret, err) {
+                    console.log('ret ' + JSON.stringify(ret) + ' err ' + JSON.stringify(err));
+                    if (ret.status) {
+                        alert('分享成功');
+                    } else {
+                        alert(err.code);
+                    }
+                });
+            },
+
+        }
+    })
+
+</script>
+
+</html>

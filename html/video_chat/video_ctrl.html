@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <style>
+        html,
+        body {
+            width: 100%;
+            background-color: transparent;
+        }
+        .wish{
+            height: 1.5rem;
+            /*width: 7.65rem;*/
+            border-radius: 1.5rem;
+            background-color: rgba(81,81,81,0.6);
+            /*opacity: 0.4;*/
+            padding: 0 0.5rem;
+        }
+    </style>
+</head>
+<body>
+<div id="app" style="overflow: hidden; background-color: transparent;">
+	<!--高度至少1px才能有效偏移-->
+    <div id='first-el' style="height: 1px; "></div>
+
+    <div class="base-padding"style="margin-top:2.4rem;">
+        <div class="flex-row " style="">
+            <div class="wish flex-row" style="align-items:center;" v-if='plan && plan.reward'>
+                <img src="../../image/vedio_gift.png" alt=""style="width:1rem;height:1rem;">
+                <div style="color:white;font-size:0.6rem;margin-left:0.5rem;" v-text='plan.reward'>
+                    香港迪士尼玩一天
+                </div>
+            </div>
+            <div class="flex-1"></div>
+            <div>
+                <img src="../../image/video_phone.png" @click='exit' style="width:2rem;height:2rem;opacity:0.5;">
+            </div>
+        </div>
+        <div class="flex-row" style="margin-top:1.3rem; opacity:0.5;">
+            <img src="../../image/vedioIcon_01.png" alt="" style="width:2rem; height:2rem;" @click='cameraSwitch'>
+        </div>
+        <div class="flex-row" style="margin-top:1rem; opacity:0.5;">
+            <img src="../../image/video-mute.png" v-if='mute' style="width: 2rem; height: 2rem;" @click='muteSwitch'>
+            <img src="../../image/vedioIcon_02.png" v-if='!mute' style="width: 2rem; height: 2rem;" @click='muteSwitch'>
+        </div>
+        <!-- <div class="flex-row" style="margin-top:1rem; opacity:0.5;">
+            <img src="../../image/vedioIcon_03.png" alt="" style="width: 2rem; height: 2rem;">
+        </div> -->
+        <div class="flex-row" style="margin-top:1.3rem;">
+            <img src="../../image/vedioIcon_04.png" alt="" style="width: 2.5rem; height: 2.5rem;" @click='showLikeOption'>
+        </div>
+
+        <!-- <div style="opacity:0.5;">
+            <img src="../../image/vedio_camera.png" alt="" style="width:2.5rem;height:2.5rem;margin:1rem auto;">
+        </div> -->
+    </div>
+
+    <!-- 小窗底部的头像、昵称 -->
+    <div class="flex-col" v-if='childAreaName != ""' @click='childAreaClick'
+        v-bind:style='{width: childAreaW, height: childAreaH, left: childAreaX, top: childAreaY}'
+        style="position: fixed; background-color: transparent; ">
+        <div class="flex-row base-padding" style="justify-content: center; align-items: center; width: 100%; height: 1.5rem; background-color: rgba(0,0,0,0.4); margin-top: auto;">
+            <img :src="childAreaImage" style="width: 1rem; height: 1rem; border-radius: 50%; ">
+            <span class='ellipsis' v-text='childAreaName' style="color: white; font-size: 0.6rem; margin-left: 0.25rem;"></span>
+        </div>
+    </div>
+
+    <!-- 发送表情选项 -->
+    <div class="" v-if='likeOptionVisible' style="display: flex; padding: 0.5rem 0; flex-wrap: wrap; position: fixed; bottom: 0; left: 0; width: 100%; background-color: white; ">
+        <div class="" v-for='(item, index) in imgList' style="width: 25%; padding: 0.25rem 0.8rem; ">
+            <img :src="item" style="width: 100%; " @click='likeClick(index)'>
+        </div>
+    </div>
+
+    <!-- 收到的表情 -->
+    <div class="flex-row flex-center" v-if='emotionVisible'  @click='emotionVisible = false'
+        style="display: flex; align-items: center; position: fixed; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); ">
+         <img :src="emotionImg" style="height: 30%; ">
+    </div>
+
+</div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        // $api.fixStatusBar($api.dom('header'));
+        // $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.roomId = params.roomId;
+
+        // 在对方小窗上显示的头像、昵称，高宽及坐标参考video_frm中小窗代码
+        vm.childAreaX = '15';
+        vm.childAreaW = parseInt(api.frameWidth * 0.4);
+        vm.childAreaH = parseInt(vm.childAreaW * 1.5);
+        vm.childAreaY = (api.frameHeight - vm.childAreaH - 30);
+        console.log(vm.childAreaX + ' ' + vm.childAreaY + ' ' + vm.childAreaW + ' ' + vm.childAreaH);
+
+        vm.childAreaW = vm.childAreaW + 'px';
+        vm.childAreaH = vm.childAreaH + 'px';
+        vm.childAreaX = vm.childAreaX + 'px';
+        vm.childAreaY = vm.childAreaY + 'px';
+
+        vm.initData();
+
+        // socket消息
+        api.addEventListener({
+            name: 'newSocketMsg'
+        }, function(ret, err) {
+            console.log('video_ctrl receive msg ' + JSON.stringify(ret));
+            var msgData = ret.value;
+            // 消息类型，1单聊，2加好友申请，3练琴邀请，4拒绝加好友，5同意加好友，6系统消息，7表情
+            if (msgData.type == 7) {// 表情
+                console.log('sendEmotion');
+                var position = msgData.content;
+                vm.emotionImg = '../../image/' + 'like-' + position + '-g.png';
+                vm.emotionVisible = true;
+            }
+        });
+
+    };
+
+    function exit() {
+        vm.exit();
+    }
+
+    function showChildAreaInfo(name, image) {
+        console.log('showChildAreaInfo ' + name + ' ' + image);
+        vm.childAreaName = name;
+        vm.childAreaImage = image;
+    }
+
+    function showFlowOut() {
+        var dialog = new auiDialog({})
+        dialog.alert({
+            title:"提示",
+            msg:'流量已经用完，请购买流量重新进入',
+            buttons:['取消', '确定']
+        }, function(ret) {
+            var roomPage = $api.getStorage('roomPage');
+            console.log('roomPage ' + roomPage);
+            api.closeToWin({
+                name: roomPage
+            });
+        })
+    }
+
+    function showFlowWarn() {
+        var dialog = new auiDialog({})
+        dialog.alert({
+            title:"提示",
+            msg:'流量剩余5分钟，请购买流量',
+            buttons:['知道了', '去续费']
+        }, function(ret) {
+            if (ret.buttonIndex == 2) {
+                api.openWin({
+                    name: 'pay_flow',
+                    url: '../room/pay_flow.html',
+                    pageParam: {
+                        roomId: this.roomId + '',
+                        inVideoChat: true
+                    },
+                    reload: true,
+                });
+            } else {
+
+            }
+        })
+    }
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '基本模板',
+            likeOptionVisible: false,
+            emotionVisible: false,
+            childAreaName: '',
+            childAreaImage: '',
+            guestInfo: {},
+            emotionImg: '../../image/like-2-g.png',
+            childAreaX: '',
+            childAreaY: '',
+            childAreaW: '',
+            childAreaH: '',
+            guestNameVisible: true,
+            planReward: '',
+            mute: false,
+            plan: {},
+            roomId: '',
+            userInfo: {},
+            imgList: [
+                '../../image/like-1.png', '../../image/like-2.png', '../../image/like-3.png', '../../image/like-4.png',
+                '../../image/like-5.png', '../../image/like-6.png', '../../image/like-7.png', '../../image/like-8.png',
+                '../../image/like-9.png', '../../image/like-10.png', '../../image/like-11.png', '../../image/like-12.png',
+                '../../image/like-13.png', '../../image/like-14.png', '../../image/like-15.png', '../../image/like-16.png'
+            ],
+        },
+        methods: {
+            initData() {
+                this.userInfo = $api.getStorage('userInfo');
+                var roomPage = $api.getStorage('roomPage');
+                if (roomPage == 'waiting_room') {// 房主端的视频界面，显示奖励，好友端不显示
+                    this.getCurrentPlan();
+                }
+
+                // 更新在线状态
+                this.updateOnlineStatus();
+            },
+            childAreaClick() {
+                console.log('childAreaClick');
+                api.execScript({
+                    frameName: 'video_frm',
+                    script: 'switchView()'
+                });
+            },
+            updateOnlineStatus() {
+                var that = this;
+                var params = {
+                    roomId: that.roomId,
+                    online: '1'
+                }
+                ajaxPost('/roomMember/updateOnlineStatus', params, function(ret, err) {
+                    console.log('' + JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            getCurrentPlan() {
+                var that = this;
+                if (that.userInfo.id == that.roomId) {// 用户为房主时才显示计划
+                    ajaxPost('/plan/getUserCurrentPlan', that.userInfo.id + '', function(ret, err) {
+                        console.log(JSON.stringify(ret));
+                        if (ret) {
+                            if (ret.returnCode == '1') {
+                                that.plan = ret.data;
+                            } else {
+                                api.toast({
+                                    msg: ret.returnMsg,
+                                    location: 'middle'
+                                });
+                            }
+                        } else {
+                            api.toast({
+                                msg: JSON.stringify(err),
+                                location: 'middle'
+                            });
+                        }
+                    })
+                }
+            },
+            exit() {
+                var that = this;
+                var params = {
+                    roomId: that.roomId,
+                    online: '0'
+                }
+                // 更新到下线状态
+                ajaxPost('/roomMember/updateOnlineStatus', params, function(ret, err) {
+                    console.log('' + JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            // 关闭视频、定时器
+                            api.execScript({
+                                frameName: 'video_frm',
+                                script: 'exit()'
+                            });
+
+                            // 刷新首页练琴计划
+                            api.execScript({
+                                name: 'root',
+                                frameName: 'home_page',
+                                script: 'requeryCurPlan()'
+                            });
+
+                            var roomPage = $api.getStorage('roomPage');
+                            console.log('roomPage ' + roomPage);
+                            api.closeToWin({
+                                name: roomPage
+                            });
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            muteSwitch() {
+                api.execScript({
+                    frameName: 'video_frm',
+                    script: 'muteSwitch(' + !this.mute + ')'
+                });
+                this.mute = !this.mute;
+            },
+            cameraSwitch() {
+                api.execScript({
+                    frameName: 'video_frm',
+                    script: 'cameraSwitch()'
+                });
+            },
+            showLikeOption() {
+                var guestInfo = $api.getStorage('guestInfo');
+                if (guestInfo == undefined) {
+                    api.toast({
+                        msg: '请邀请朋友进入琴房',
+                        location: 'middle'
+                    });
+                    return;
+                }
+                this.likeOptionVisible = !this.likeOptionVisible;
+            },
+            likeClick(index) {
+                var that = this;
+                that.likeOptionVisible = false;
+                var guestInfo = $api.getStorage('guestInfo');
+                var params = {
+                    roomId: that.roomId + '',
+                    targetId: guestInfo.id + '',
+                    position: index + 1
+                }
+                console.log(JSON.stringify(params))
+                ajaxPost('/chatMsg/sendEmotion', params, function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            api.toast({
+                                msg: '发送成功',
+                                location: 'middle'
+                            });
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+
+        }
+    })
+
+</script>
+
+</html>

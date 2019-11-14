@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <style>
+    .banner_04_kind{
+        background-color: var(--theme-black);
+        border-radius: 1rem;
+        color: var(--theme-color);
+        /*padding: 0.2rem 0.4rem;*/
+        height: 1rem;
+        padding: 0 0.5rem;
+        line-height: 1rem;
+        font-size: 0.5rem;
+    }
+    .search{
+        width: 80%;
+        height: 1.8rem;
+        border: 1px solid var(--theme-grey);
+        margin-left: 1rem;
+        border-radius: 1rem;
+    }
+
+    </style>
+</head>
+<body>
+<div id="app" class='flex-col' style="">
+    <header class="header theme-bg header-fix flex-row">
+        <img src="../../image/add_delete.png" alt="" style="width:1.25rem; height:1.25rem;" @click='goBack'>
+        <div class="flex-row search" style="align-items:center; padding-left: 0.5rem; ">
+            <img src="../../image/add_search.png" alt="" style="width:1rem;height:1rem;">
+            <input type="text" placeholder="输入用户昵称或曲目关键词搜索" style="margin-left:0.5rem;font-size:0.75rem;" v-model = 'searchName'>
+        </div>
+    </header>
+	<!--高度至少1px才能有效偏移-->
+    <div id='first-el' style="height: 1px; "></div>
+    <div class="" style="padding: 0.8rem 0.65rem; ">
+        <div style="margin-bottom:0.75rem;;" v-for='(item,index) in strangerList'>
+            <div class="flex-row" style="align-items:center; color:var(--theme-black);">
+                <div class="flex-col" style="margin-right:0.6rem;" @click='friendPage(item)'>
+                    <img :src='item.image' alt="" style="width:2.5rem;height:2.5rem; border-radius:50%;">
+                </div>
+                <div class="flex-col" @click='friendPage(item)'>
+                    <div class="flex-row"style="font-size:1rem;font-weight:700;" v-text='item.nickName'></div>
+                    <div class="flex-row"style="font-size:0.6rem;">
+                        <span v-text="item.age+'岁·'"> </span>
+                        <span v-text='item.provinceName+item.cityName'></span>
+                    </div>
+                </div>
+                <div class="flex-1"></div>
+                <!--  女-->
+                <div class="flex-row" style="align-items:center;" v-if='item.sex==2' @click='addFriend(item)'>
+                    <img src="../../image/home_female.png" alt=""style="width:0.75rem;height:0.75rem;">
+                    <span style="font-size:0.6rem;color:#FDA4BA;margin-left:0.25rem;">加好友</span>
+                </div>
+                <!-- 男 -->
+                <div class="flex-row" style="align-items:center;" v-if ='item.sex==1' @click='addFriend(item)'>
+                    <img src="../../image/home_male.png" alt=""style="width:0.75rem;height:0.75rem;">
+                    <span style="font-size:0.6rem;color:#58587F;margin-left:0.25rem;">加好友</span>
+                </div>
+            </div>
+            <div class="flex-row" style="margin:0.4rem 0 0 0;" v-if ="item.currentPlan !== undefined">
+                <div class='banner_04_kind' v-text= 'item.currentPlan.instrumentName'></div>
+                <span style="font-size:0.7rem;font-weight:700;margin-left: 0.5rem;">目前学习</span>
+                <span style="font-size:0.7rem;" v-text="'《'+item.currentPlan.song+'》'">《小奏鸣曲第二乐章》</span>
+            </div>
+            <div class="grey-line" style="margin-top:0.75rem;"></div>
+        </div>
+
+        <div v-show='endHintVisible' style="color:var(--theme-grey); font-size:0.6rem;text-align:center;margin:0.7rem 0;" >
+            我也是有底线的哦~~
+        </div>
+    </div>
+
+</div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        $api.fixStatusBar($api.dom('header'));
+        $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+
+        vm.initData();
+
+        api.addEventListener({
+            name:'scrolltobottom',
+            extra:{
+                threshold: 0
+            }
+        }, function(ret, err){
+            // console.log('scrolltobottom');
+            vm.getNextPage();
+        });
+    };
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '',
+            searchName:'',
+            userInfo: {},
+            endHintVisible: false,
+            page :{
+                current: 1,
+                size: 10,
+                pages: 0,
+                total: 0
+            },
+            strangerList:[],
+        },
+        watch:{
+            searchName(newName,oldName){
+                console.log('searchName' + newName);
+                this.page.current = 1;
+                this.getStrangerList();
+            }
+        },
+        methods: {
+            initData() {
+                this.userInfo = $api.getStorage('userInfo');
+                this.getStrangerList();
+            },
+            friendPage(item) {
+                api.openWin({
+                    name: 'friend_page',
+                    url: '../home/friend_page.html',
+                    pageParam: {
+                        friendUserId: item.id
+                    },
+                    reload: true
+                });
+            },
+            getStrangerList(){
+                var that = this;
+                var params = {
+                    queryParams: {
+                        userId: that.userInfo.id,
+                        searchName: that.searchName
+                    },
+                    page: that.page
+                };
+                ajaxPost('/friend/getStrangerList', params, function(ret, err) {
+                    // console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.page = ret.data.page;
+                            if (that.page.current == 1) {
+                                that.strangerList = ret.data.list;
+                            } else {
+                                that.strangerList.push.apply(that.strangerList, ret.data.list);
+                                api.pageDown(function(ret, err) {});
+                            }
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            getNextPage() {
+                if (this.page.current >= this.page.pages) {
+                    this.endHintVisible = true;
+                    return;
+                }
+                this.page.current++;
+                this.getStrangerList();
+            },
+            // 添加好友
+            addFriend(item) {
+                // console.log(JSON.stringify(item));
+                var that = this;
+                if (item.isFriendOpen == 1) {
+                    api.openWin({
+                        name: 'add_friend',
+                        url: '../friend/add_friend.html',
+                        pageParam: {
+                            // name: 'test'
+                            targetId: item.id,
+                        }
+                    });
+                } else {
+                    api.toast({
+                        msg: '对方拒绝陌生人加好友',
+                        location: 'middle'
+                    });
+                }
+            },
+        }
+    })
+
+</script>
+
+</html>

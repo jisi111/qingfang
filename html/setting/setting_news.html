@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <style>
+    .pd{
+        padding: 0 0.75rem;
+    }
+    </style>
+</head>
+<body>
+<div id="app" style="overflow: hidden;">
+    <header class="header theme-bg header-fix flex-row">
+        <img src="../../image/add_delete.png" alt="" style="width:1.25rem; height:1.25rem;" @click='goBack'>
+        <span v-text='title' style="font-size: 1.2rem; margin-left: 0.5rem; "></span>
+    </header>
+	<!--高度至少1px才能有效偏移-->
+    <div id='first-el' style="height: 1px; "></div>
+
+    <div class="base-padding flex-row" style="padding-top: 1rem; align-items: center;">
+        <div class="">
+            <span>消息提醒声音</span>
+        </div>
+        <div class="flex-1">
+
+        </div>
+        <div class="aui-list-item-inner">
+            <div class="aui-list-item-input">
+                <input type="checkbox" class="aui-switch" @change='checkChange()' v-model="isOpen">
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        $api.fixStatusBar($api.dom('header'));
+        $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+
+        vm.userInfo = $api.getStorage('userInfo');
+        console.log(JSON.stringify($api.getStorage('userInfo')));
+        if (vm.userInfo.isMsgVoiceOpen == 0) {
+            vm.isOpen = false
+        }
+        if (vm.userInfo.isMsgVoiceOpen == 1) {
+            vm.isOpen = true
+        }
+        vm.initData();
+    };
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '消息与提醒',
+            isOpen: true,
+        },
+        methods: {
+            initData() {
+                $api.getStorage('userInfo');
+                console.log(JSON.stringify($api.getStorage('userInfo')));
+            },
+            checkChange(){
+                var that = this;
+                params = {
+                    switchOn : that.isOpen
+                };
+                console.log(JSON.stringify(that.isOpen));
+                    ajaxPost('/user/refuseFriendSwitch', params, function(ret, err) {
+                      api.hideProgress();
+                      console.log(JSON.stringify(ret));
+                      if (ret) {
+                          if (ret.returnCode == '1') {
+                              if (that.isOpen == false) {
+                                  that.userInfo.isMsgVoiceOpen = 0
+                                   $api.setStorage('userInfo',that.userInfo);
+                                     console.log(JSON.stringify($api.getStorage('userInfo')));
+                              }
+                              if (that.isOpen == true) {
+                                  that.userInfo.isMsgVoiceOpen = 1
+                                   $api.setStorage('userInfo',that.userInfo);
+                                     console.log(JSON.stringify($api.getStorage('userInfo')));
+                              }
+
+                          } else {
+                              api.toast({
+                                  msg: ret.returnMsg,
+                                  location: 'middle'
+                              });
+                          }
+                      } else {
+                          api.toast({
+                              msg: JSON.stringify(err),
+                              location: 'middle'
+                          });
+                      }
+                  })
+              }
+        }
+    })
+
+</script>
+
+</html>

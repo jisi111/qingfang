@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <style>
+
+    </style>
+</head>
+<body>
+    <div id="app" class='flex-col ' style=" ">
+        <div class="base-padding flex-1" id='list' style="padding-bottom: 4rem; overflow: scroll; ">
+            <div class="flex-row flex-center" style="align-items:center; font-size: 0.6rem; color: #9E9E9E; margin-top: 1rem; ">
+                1小时前
+            </div>
+            <div class="" v-for='(item, index) in chatList'>
+                <!-- 对方消息 -->
+                <div class="flex-row" v-if='item.srcId == friendId' style="font-size: 0.7rem; color: #515151; margin-top: 1rem; ">
+                    <div class="flex-row" style="margin-right: auto; align-items: center; ">
+                        <img :src="friendImage" style="width: 2.5rem; height: 2.5rem; border-radius: 50%; ">
+                        <div class="" style="border: 8px solid; border-color: transparent #EEEEEE transparent transparent ; "></div>
+                        <div class='flex-row' v-text='item.content'
+                            style="padding: 0 1rem; height: 2rem; align-items: center; background-color: #EEEEEE; border-radius: 6px; ">今晚一起练琴</div>
+                    </div>
+                </div>
+                <!-- 我方消息 -->
+                <div class="flex-row" v-if='item.srcId == userInfo.id' style="font-size: 0.7rem; color: #515151; margin-top: 1rem;">
+                    <div class="flex-row" style="margin-left: auto; align-items: center; ">
+                        <div class='flex-row' v-text='item.content' style="padding: 0 1rem; height: 2rem; align-items: center; background-color: #EEEEEE; border-radius: 6px; ">今晚一起练琴</div>
+                        <div class="" style="border: 8px solid; border-color: transparent transparent transparent #EEEEEE; "></div>
+                        <img :src="userInfo.image" style="width: 2.5rem; height: 2.5rem; border-radius: 50%; ">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        $api.fixStatusBar($api.dom('#header'));
+        // $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.friendId = params.targetId;
+        vm.friendId = 13;
+        vm.initData();
+    };
+
+    function scrollBottom() {
+        console.log('scrollBottom');
+        api.pageDown({
+            bottom: true
+        }, function(ret, err) {
+        });
+    }
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '邀请好友',
+            chatContent: '',
+            userInfo: {},
+            friendId: 0,
+            friendImage: '',
+            chatList: [],
+            page: {
+                current: 1,
+                size: 10,
+                pages: 0,
+                total: 0
+            },
+        },
+        methods: {
+            initData() {
+                this.userInfo = $api.getStorage('userInfo');
+                this.getChatList();
+                this.getFriendSimpleInfo();
+            },
+            inputFocus() {
+                console.log('inputFocus');
+                setTimeout(function() {
+                    var offset = $api.dom('#msgInput').offsetTop;
+                    console.log('offset ' + offset);
+                    $api.attr($api.dom('#msgInput'), 'height','300px');
+                }, 300)
+
+            },
+            getChatList() {
+                var that = this;
+                var params = {
+                    queryParams: {
+                        srcId: that.userInfo.id + '',
+                        targetId: that.friendId + ''
+                    },
+                    page: that.page
+                }
+                console.log('params ' + JSON.stringify(params));
+                ajaxPost('/chatMsg/getChatList', params, function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.chatList = ret.data.list;
+                            // $api.dom('#list').scrollTo({
+                            //     top: 1000,
+                            //     behavior: "smooth"
+                            // });
+                            // api.pageDown({bottom: true}, function(ret, err) {
+                            // });
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            getFriendSimpleInfo() {
+                var that = this;
+                ajaxPost('/user/getSimpleInfo', that.friendId + '', function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.friendImage = ret.data.image;
+                            that.title = ret.data.nickName;
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            sendMsg() {
+                var that = this;
+                var offset = $api.dom('#msgInput').offsetTop;
+                console.log('offset ' + offset);
+                if (that.chatContent == undefined || that.chatContent == '') {
+                    return;
+                }
+                var params = {
+                    srcId: that.userInfo.id + '',
+                    targetId: that.friendId + '',
+                    content: that.chatContent
+                }
+                console.log('params ' + JSON.stringify(params));
+                ajaxPost('/chatMsg/sendChat', params, function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.chatContent = '';
+                            $api.dom('#msgInput').focus();
+                            that.getChatList();
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+
+            },
+
+        }
+    })
+
+</script>
+
+</html>

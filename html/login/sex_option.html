@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <style>
+        .btn {
+            border: 1px solid var(--theme-grey);
+            color: var(--theme-grey);
+        }
+        .btn-active {
+            border: 1px solid var(--theme-black);
+            color: var(--theme-black);
+        }
+        .sex-text {
+            color: var(--theme-grey);
+        }
+        .sex-text-active {
+            color: var(--theme-black);
+        }
+    </style>
+</head>
+<body>
+<div id="app" style="overflow: hidden;">
+    <div class="" id='header'>
+    </div>
+	<!--高度至少1px才能有效偏移-->
+    <div id='first-el' style="height: 1px; "></div>
+
+    <div class="base-padding " style="font-size: 1.5rem; text-align: center; ">
+        <div class="sex-text" v-bind:class='{"sex-text-active": sex == 1}' @click='sex = 1' style="margin-top: 40%; ">男生</div>
+        <div class="grey-line" style="width: 30%; margin: 0.5rem auto; "></div>
+        <div class="sex-text" v-bind:class='{"sex-text-active": sex == 2}' @click='sex = 2' >女生</div>
+    </div>
+
+    <div class="btn" @click='nextStep' v-bind:class='{"btn-active": sex != 0}' style="width: 7rem; text-align: center; margin: 60% auto 0; padding: 0.3rem 0; border-radius: 1.2rem; font-size: 0.8rem; ">
+        进入首页
+    </div>
+
+</div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        $api.fixStatusBar($api.dom('#header'));
+        $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('#header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.initData();
+    };
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '基本模板',
+            sexSelected: false,
+            sex: 0,
+            userInfo: {},
+        },
+        methods: {
+            initData() {
+
+            },
+            nextStep() {
+                var that = this;
+                if (that.sex == 0) {
+                    api.toast({
+                        msg: '请选择性别',
+                        location: 'middle'
+                    });
+                    return;
+                }
+                api.showProgress({
+                    title: '加载中...'
+                });
+                that.userInfo = $api.getStorage('userInfo');
+                that.userInfo.sex = that.sex;
+                ajaxPost('/user/update', that.userInfo, function(ret, err) {
+                    api.hideProgress();
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            $api.setStorage('userInfo', that.userInfo);
+                            api.execScript({
+                                name: 'root',
+                                script: 'reloadHomePage();'
+                            });
+                            api.closeToWin({
+                                name: 'root'
+                            });
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+
+        }
+    })
+
+</script>
+
+</html>

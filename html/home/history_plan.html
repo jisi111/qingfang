@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css" />
+    <style>
+        .font_b {
+            color: var(--theme-black);
+        }
+
+        .font_w {
+            color: var(--theme-color);
+        }
+
+        .font_g {
+            color: var(--theme-grey);
+        }
+
+        .time {
+            margin-top: 0.8rem;
+            border-radius: 0.5rem;
+            background-color: var(--theme-black);
+            padding: 0.8rem 0.6rem;
+            color: var( --theme-grey);
+            width: 100%;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: middle;
+            -ms-flex-align: middle;
+            align-items: middle;
+            overflow: auto;
+        }
+
+        .month_body {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: middle;
+            -ms-flex-align: middle;
+            align-items: middle;
+            overflow: auto;
+        }
+
+        .month {
+            margin-bottom: 0.2rem;
+            width: 5.8rem;
+            -ms-flex-negative: 0;
+            flex-shrink: 0;
+        }
+
+        .month p {
+            margin-left: 0.21rem;
+        }
+
+        .day {
+            font-size: 0.43rem;
+            width: 0.65rem;
+            height: 0.65rem;
+            line-height: 0.65rem;
+            text-align: center;
+            border-radius: 0.1rem;
+            background-color: #757575;
+            color: var(--theme-grey);
+            float: left;
+            margin-left: 0.17rem;
+            margin-bottom: 0.17rem;
+        }
+
+        .day2 {
+            font-size: 0.43rem;
+            width: 0.65rem;
+            height: 0.65rem;
+            line-height: 0.65rem;
+            text-align: center;
+            border-radius: 0.1rem;
+            background-color: var(--theme-color);
+            color: var(--theme-black);
+            float: left;
+            margin-left: 0.17rem;
+            margin-bottom: 0.17rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="flex-col">
+        <header class="header theme-bg header-fix flex-row" style="">
+            <img src="../../image/add_delete.png" alt="" style="width:1.25rem; height:1.25rem;" @click='goBack'>
+            <span v-text='title' style="font-size: 1.2rem; margin-left: 0.5rem; "></span>
+        </header>
+        <!--高度至少1px才能有效偏移-->
+        <div id='first-el' style="height: 1px; "></div>
+
+        <div class="base-padding">
+            <div v-for='(item,index) in userPlanData'>
+                <div class="flex-row font_b" style="align-items:center;margin-top:1rem;">
+                    <div style="color:#E51C23;font-size:0.8rem" v-if='item.isFullPractice == false'>
+                        未完成 (原因：非持续性的)
+                    </div>
+                    <div style="color:#E51C23;font-size:0.8rem" v-if='item.isFullPractice == true'>
+                        很棒，按时完成计划
+                    </div>
+                    <div class="flex-1"></div>
+                    <div style="font-size:0.6rem" v-text="'起始时间'+' '+item.startTime.substring(0, 10)"></div>
+                </div>
+                <div class="flex-row" style="margin:0.5rem 0;font-size:0.8rem;">
+                     <span>曲目:</span>
+                     <span v-text='item.song'>小奏鸣曲(第二乐章)</span>
+                 </div>
+                <div class="flex-row font_b" style="">
+                    <div class="flex-col" style="width:50%;">
+                        <div class="flex-row" style="font-size:0.6rem;">练琴计划(天)</div>
+                        <div class="flex-row" style="font-size:1.5rem;">
+                            <span v-if='item.practiceDateList != undefined' v-text="item.practiceDateList.length"></span>
+                            <span v-if='item.practiceDateList == undefined' >0</span>
+                            <span>/</span>
+                            <span>30</span>
+                        </div>
+                    </div>
+                    <div class="flex-col" style="width:50%;">
+                        <div class="flex-row" style="font-size:0.6rem;">练琴时长(分钟)</div>
+                        <div class="flex-row" style="font-size:1.5rem;" v-text='item.practicePeriod'>
+                        </div>
+                    </div>
+                </div>
+                <div class="time">
+                    <div v-for="(yearItem,yearIndex) in item.yearList">
+                        <div style="font-size:0.7rem;" v-text="yearItem.year">2020</div>
+                        <div class="month_body">
+                            <div class="month" v-for='(monthItem, monthIndex) in yearItem.monthList '>
+                                <p v-text='monthItem'>2月</p>
+                                <!-- 28天 -->
+                                <div class="day" v-if='monthItem == 2'
+                                    v-bind:class="{'day2':hasRecord(yearItem.year,monthItem,dayItem, item)}"
+                                    v-for='(dayItem, dayIndex) in 28' v-text='dayItem'>
+                                </div>
+                                <div class="day" v-if="monthItem == 2" v-for='(dayItem,dayIndex) in 7'></div>
+                                <!-- 31天 -->
+                                <div class="day" v-if='monthItem == 1 || monthItem == 3 || monthItem == 5 || monthItem == 7 || monthItem == 8 ||monthItem ==10 || monthItem == 12'
+                                    v-bind:class="{'day2':hasRecord(yearItem.year,monthItem,dayItem, item)}"
+                                    v-for="(dayItem,dayIndex) in 31" v-text='dayItem'></div>
+                                <div class="day" v-if='monthItem == 1 || monthItem == 3 || monthItem == 5 || monthItem == 7 || monthItem == 8 ||monthItem ==10 || monthItem == 12'
+                                    v-for="(dayItem,dayIndex) in 4"></div>
+                                <!-- 30天 -->
+                                <div class="day" v-if='monthItem == 4 || monthItem == 6 || monthItem == 9 || monthItem == 11'
+                                    v-bind:class="{'day2':hasRecord(yearItem.year,monthItem,dayItem, item)}"
+                                    v-for="(dayItem,dayIndex) in 30"  v-text='dayItem'>
+                                </div>
+                                <div class="day" v-if='monthItem == 4 || monthItem == 6 || monthItem == 9 || monthItem == 11'
+                                    v-for="(dayItem,dayIndex) in 5"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grey-line" style="margin-top:1rem;"></div>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js"></script>
+<script type="text/javascript" src="../../script/aui-toast.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        $api.fixStatusBar($api.dom('header'));
+        $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.userId = params.userId;
+        console.log('页面传参过来的id=======', vm.userId);
+        vm.initData();
+    };
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '过往练琴记录',
+            userPlanData: [],
+            userId: ''
+        },
+        methods: {
+            initData() {
+                this.getHistoryPlanList();
+            },
+            getHistoryPlanList() {
+                var that = this;
+                ajaxPost('/plan/getHistoryPlanList', that.userId + '', function(ret, err) {
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.userPlanData = ret.data;
+                            console.log(JSON.stringify(ret.data));
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            hasRecord(year, month, day, item) {
+                if (month < 10) {
+                    month = '0' + month;
+                }
+                if (day < 10) {
+                    day = '0' + day;
+                }
+                var dayStr = year + '-' + month + '-' + day;
+                // console.log(dayStr);
+                // console.log(JSON.stringify(item.practiceDateList))
+                if (item.practiceDateList.indexOf(dayStr) >= 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+
+        }
+    })
+</script>
+
+</html>

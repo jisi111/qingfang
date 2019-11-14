@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <style>
+    .pd{
+        padding: 0 0.75rem;
+    }
+    </style>
+</head>
+<body>
+<div id="app" style="overflow: hidden;">
+    <header class="header theme-bg header-fix flex-row">
+        <img src="../../image/add_delete.png" alt="" style="width:1.25rem; height:1.25rem;" @click='goBack'>
+        <span v-text='title' style="font-size: 1.2rem; margin-left: 0.5rem; "></span>
+    </header>
+	<!--高度至少1px才能有效偏移-->
+    <div id='first-el' style="height: 1px; "></div>
+
+    <div class="pd flex-col" style="align-items:center;">
+        <div class=" " style="border:1px solid #EEEEEE ;border-radius: 0.5rem;margin-top: 1.15rem;height: 7.5rem;width: 98%;">
+            <textarea name="name" rows="8" cols="8" placeholder="跟ta说点什么吧" v-model='content'
+                style="margin: 6px 6px ;color:#9E9E9E;font-size:0.9rem;"></textarea>
+        </div>
+        <div class="" @click='sendRequest' style="width: 98%;height: 2rem; color:white; border-radius: 0.4rem;background-color: #3AB2BF ;text-align: center;line-height: 2rem;margin-top: 2rem; cursor:pointer;" >
+            发送
+        </div>
+    </div>
+
+</div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        $api.fixStatusBar($api.dom('header'));
+        $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.targetId = params.targetId;
+        vm.initData();
+    };
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '加好友',
+            targetId: 0,
+            content: '',
+        },
+        methods: {
+            initData() {
+
+            },
+            sendRequest() {
+                var that = this;
+                var param = {
+                    targetId: that.targetId,
+                    content: that.content
+                }
+                console.log(JSON.stringify(param));
+                ajaxPost('/chatMsg/requestAddFriend', param, function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            api.toast({
+                                msg: '发送成功',
+                                location: 'middle'
+                            });
+                            api.closeWin();
+                            // setTimeout(function() {
+                            //     api.closeWin();
+                            // }, 500);
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            returnHome(){
+                api.closeWin();
+            }
+
+        }
+    })
+
+</script>
+
+</html>

@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css" />
+    <style>
+        .bg {
+            position: fixed;
+            width: 100%;
+            /*height:100%;*/
+            /*height: 100%;*/
+        }
+
+        .inform {
+            /*width: 14.3rem;*/
+            border-radius: 3rem;
+            background-color: #F5F5F5;
+            opacity: 0.7;
+            text-align: left;
+        }
+        /*男*/
+
+        .recommend1 {
+            width: 100%;
+            height: 5rem;
+            background-color: #58587F;
+            border-radius: 0.75rem;
+            margin: 1rem 0 0.5rem 0;
+            color: var(--theme-color);
+            font-size: 0.6rem;
+        }
+        /*女*/
+
+        .recommend2 {
+            width: 100%;
+            height: 5rem;
+            background-color: #FDA4BA;
+            border-radius: 0.75rem;
+            margin: 1rem 0 0.5rem 0;
+            color: var(--theme-color);
+            font-size: 0.6rem;
+        }
+        /*消息*/
+
+        .icon_news {
+            width: 0.9rem;
+            height: 0.9rem;
+            background-color: #E51C23;
+            border-radius: 50%;
+            font-size: 0.6rem;
+            color: var(--theme-color);
+            text-align: center;
+            ;
+            line-height: 0.9rem;
+            position: absolute;
+            top: -0.5rem;
+            right: 0;
+        }
+
+        .user_photo {
+            width: 3rem;
+            height: 3rem;
+            background-color: var(--theme-color);
+            border-radius: 50%;
+            align-items: center;
+            margin: 0 1rem;
+        }
+
+        .banner_01 {
+            width: 100%;
+            border-radius: 0.75rem 0.75rem 0 0;
+            background-color: var(--theme-color);
+            padding: 0.65rem 0.55rem 1rem 0.7rem;
+        }
+
+        .banner_01_set {
+            font-size: 0.6rem;
+            color: var(--theme-black);
+            /*height: 1.25rem;
+            width: 2.5rem;*/
+            padding: 0.2rem 0.6rem;
+            border-radius: 1rem;
+            background-color: #E0E0E0;
+        }
+
+        .banner_02 {
+            width: 100%;
+            border-radius: 0 0 0.75rem 0.75rem;
+            background-color: var(--theme-black);
+            padding: 1rem 0.55rem 1rem 0.7rem;
+        }
+
+        .time {
+            background-color: var(--theme-black);
+            padding: 0.2rem;
+            color: var( --theme-grey);
+            width: 100%;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: middle;
+            -ms-flex-align: middle;
+            align-items: middle;
+            overflow: auto;
+        }
+
+        .month_body {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: middle;
+            -ms-flex-align: middle;
+            align-items: middle;
+            overflow: auto;
+        }
+
+        .month {
+            margin-bottom: 0.2rem;
+            width: 5.8rem;
+            -ms-flex-negative: 0;
+            flex-shrink: 0;
+        }
+
+        .month p {
+            margin-left: 0.21rem;
+        }
+
+        .day {
+            font-size: 0.43rem;
+            width: 0.65rem;
+            height: 0.65rem;
+            line-height: 0.65rem;
+            text-align: center;
+            border-radius: 0.1rem;
+            background-color: #757575;
+            color: var(--theme-grey);
+            float: left;
+            margin-left: 0.17rem;
+            margin-bottom: 0.17rem;
+        }
+
+        .day2 {
+            font-size: 0.43rem;
+            width: 0.65rem;
+            height: 0.65rem;
+            line-height: 0.65rem;
+            text-align: center;
+            border-radius: 0.1rem;
+            background-color: var(--theme-color);
+            color: var(--theme-black);
+            float: left;
+            margin-left: 0.17rem;
+            margin-bottom: 0.17rem;
+        }
+
+        .banner_03 {
+            margin-top: 0.5rem;
+            width: 100%;
+            border-radius: 0.75rem;
+            background-color: var(--theme-color);
+            padding: 0.65rem 0.55rem 0.5rem 0.7rem;
+        }
+
+        .banner_03_in {
+            color: var(--theme-color);
+            background-color: #FF4081;
+            border-radius: 1rem;
+            padding: 0.1rem 0.8rem;
+            font-size: 0.6rem;
+        }
+
+        .banner_03_button {
+            color: var(--theme-color);
+            height: 1.1rem;
+            width: 2.2rem;
+            text-align: center;
+            line-height: 1.1rem;
+            border-radius: 1rem;
+            margin-left: 1.1rem;
+        }
+
+        .banner_04 {
+            margin-top: 0.5rem;
+            width: 100%;
+            border-radius: 0.75rem;
+            background-color: var(--theme-color);
+            padding: 0.65rem 0.55rem 1rem 0.7rem;
+        }
+
+        .banner_04_kind {
+            background-color: var(--theme-black);
+            border-radius: 1rem;
+            color: var(--theme-color);
+            /*padding: 0.2rem 0.4rem;*/
+            height: 1rem;
+            padding: 0 0.5rem;
+            line-height: 1rem;
+            font-size: 0.5rem;
+        }
+
+        .question {
+            width: 2.5rem;
+            height: 2.5rem;
+            background-color: #3AB2BF;
+            border-radius: 50%;
+            color: var(--theme-color);
+            font-size: 0.6rem;
+            text-align: center;
+            padding: 0.3rem 0.4rem;
+            opacity: 0.5;
+            position: fixed;
+            right: 0.65rem;
+            bottom: 0.55rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" style="">
+        <!--高度至少1px才能有效偏移-->
+        <!-- <div id='first-el' style="height: 1px; "></div> -->
+        <div class="bg">
+            <img :src="friendInfo.cover" alt="" style="width:100%;height:100%;">
+        </div>
+        <div class='base-padding' style="position:absolute;">
+            <img src="../../image/del-white.png" style="position: fixed; top: 2rem; left: 1rem; width:1.25rem; height:1.25rem; " @click='goBackPage'>
+            <!--  icon图标和消息板块-->
+            <div class='flex-col' style="height:21rem; overflow:hidden;">
+                <!-- icon图标 -->
+                <div class="flex-row" style='margin-top:1.9rem;' >
+                    <div class="flex-1"></div>
+                    <div>
+                        <img src="../../image/homeIcon-01.png" @click='gotoShare' style="width:1.75rem;height:1.75rem;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 介绍 -->
+            <div class="flex-row" style="align-items:center;" :class="{'recommend1':friendInfo.sex==1,'recommend2':friendInfo.sex==2}">
+                <div class='flex-row user_photo' style="">
+                    <img :src='friendInfo.image' alt="" style="width:2.5rem;height:2.5rem; border-radius: 50%; margin:0 auto;">
+                </div>
+                <div class="">
+                    <div class="flex-row" style="font-size:1.25rem;font-weight:700;" v-text='friendInfo.nickName'></div>
+                    <div class="flex-row">
+                        <span v-text="friendInfo.age+'岁·'"></span>
+                        <span v-text="friendInfo.provinceName+friendInfo.cityName"></span>
+                    </div>
+                    <div class="flex-row" v-text='friendInfo.sign'></div>
+                </div>
+            </div>
+
+            <div class="banner_01" style="">
+                <div class="flex-row" style='align-items:center;margin-bottom:0.65rem'>
+                    <div class="flex-col" style="width:1.2rem;font-size:0.6rem;color:var(--theme-grey);">
+                        目前学习
+                    </div>
+                    <div class="flex-col" style='font-size:1.25rem;color:var(--theme-black);font-weight:700;margin-left:0.4rem;'
+                        v-text="currentPlan.instrumentName">
+                    </div>
+                    <div class="flex-1"></div>
+                </div>
+                <div class="grey-line"></div>
+                <div class="flex-row" style="margin-top:1rem;font-size:0.6rem;color:var(--theme-grey);">
+                    目前学习 (练习) 曲目
+                </div>
+                <div class="flex-row" style="font-size:0.8rem;color:var(--theme-black);margin-top:0.7rem;">
+                    <span v-text="currentPlan.song">小奏鸣曲(第二乐章)</span>
+                </div>
+            </div>
+            <div class="banner_02" style="">
+                <div class="flex-row" style="font-size:0.6rem;">
+                    <div class="flex-col" style="width:50%">
+                        <div class="flex-row" style="color:#cecece">
+                            <span style="margin-right:0.25rem;">练琴计划</span>
+                            <span>(天)</span>
+                        </div>
+                        <div class="flex-row" style="font-size:1.5rem;font-weight:700;color:#ffffff;">
+                            <span v-if='currentPlan.practiceDateList != undefined' v-text="currentPlan.practiceDateList.length">1</span>
+                            <span v-if='currentPlan.practiceDateList == undefined' >0</span>
+                            <span style="margin:0 0.3rem;">/</span>
+                            <span v-if='currentPlan.period != undefined' v-text='currentPlan.period'>30</span>
+                            <span v-if='currentPlan.period == undefined' >0</span>
+                        </div>
+                    </div>
+                    <div class="flex-col" style="width:50%">
+                        <div class="flex-row" style="color:#cecece">
+                            <span style="margin-right:0.25rem;">练琴时长</span>
+                            <span>(分钟)</span>
+                        </div>
+                        <div v-if='currentPlan.practicePeriod != undefined'
+                            class="flex-row" style="font-size:1.5rem;font-weight:700;color:#ffffff;"
+                            v-text="currentPlan.practicePeriod">
+                        </div>
+                        <div v-if='currentPlan.practicePeriod == undefined'
+                            class="flex-row" style="font-size:1.5rem;font-weight:700;color:#ffffff;">
+                            0
+                        </div>
+                    </div>
+                </div>
+                <div class="grey-line" style="background-color:#686868;"></div>
+                <div class="flex-row" style="font-size:0.6rem;color:#cecece;margin:0.6rem 0;o">
+                    <span>心愿礼物</span>
+                    <span style="margin-left:1rem;" v-text="currentPlan.reward">香港迪士尼玩一天</span>
+                </div>
+                <div class="grey-line" style="background-color:#686868;"></div>
+                <!-- 日期 -->
+                <div class="time">
+                    <div v-for='(yearItem,yearIndex) in currentPlan.yearList'>
+                        <div style="font-size:0.7rem;" v-text='yearItem.year'></div>
+                        <div class="month_body">
+                            <div class="month" v-for='(monthItem, monthindex) in yearItem.monthList'>
+                                <p v-text="monthItem+'月'"></p>
+                                <!-- 28天的月份 -->
+                                <div class="day" v-if="monthItem == 2" v-bind:class="{'day2':hasRecord(yearItem.year,monthItem,dayItem)}" v-for='(dayItem, dayIndex) in 28' v-text='dayItem'></div>
+                                <!-- 31天的月份 -->
+                                <div class="day" v-bind:class="{'day2':hasRecord(yearItem.year,monthItem,dayItem)}" v-if="monthItem ==1 || monthItem == 3 || monthItem ==5 || monthItem == 7 || monthItem== 8 || monthItem == 10 || monthItem == 12" v-for='(dayItem,dayIndex) in 31' v-text='dayItem'>
+                                </div>
+                                <div class="day" v-if="monthItem ==1 || monthItem == 3 || monthItem ==5 || monthItem == 7 || monthItem== 8 || monthItem == 10 || monthItem == 12" v-for='(dayItem,dayIndex) in 4'>
+                                </div>
+                                <!-- 30天的月份 -->
+                                <div class="day" v-bind:class="{'day2':hasRecord(yearItem.year,monthItem,dayItem)}" v-if="monthItem == 4 || monthItem == 6 || monthItem == 9|| monthItem == 11 " v-for='(dayItem,dayIndex) in 30' v-text='dayItem'>
+                                </div>
+                                <div class="day" v-if="monthItem == 4 || monthItem == 6 || monthItem == 9|| monthItem == 11 " v-for='(dayItem,dayIndex) in 5'>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-row">
+                    <div class="flex-1"></div>
+                    <div style="color:#cecece;font-size:0.6rem;" @click='previous'>查看过往计划</div>
+                </div>
+            </div>
+
+            <div class="banner_04">
+                <div class="flex-row" style="margin-bottom:0.25rem;" @click='gotoStrangerSearch'>
+                    <img src="../../image/home_search.png" alt="" style="width:1.5rem;height:1.5rem;">
+                </div>
+                <div style="margin:0.75rem 0;" v-for='(item,index) in strangerList'>
+                    <div class="flex-row" style="color:var(--theme-black);">
+                        <div class="flex-col" style="margin-right:0.6rem;" @click='friendPage(item)'>
+                            <!-- <img src="../../image/user-photo.png" alt="" style="width:2.5rem;height:2.5rem;"> -->
+                            <img :src="item.image" alt="" style="width:2.5rem;height:2.5rem; border-radius: 50%; ">
+                        </div>
+                        <div class="flex-col" @click='friendPage(item)'>
+                            <div class="flex-row" style="font-size:1rem;font-weight:700;" v-text='item.nickName'></div>
+                            <div class="flex-row" style="font-size:0.6rem;">
+                                <span v-text="item.age+'岁·'"> </span>
+                                <span v-text="item.provinceName+item.cityName"></span>
+                            </div>
+                        </div>
+                        <div class="flex-1"></div>
+                        <div class="flex-col" style="margin-top:0.4rem;">
+                            <!--  女-->
+                            <div class="flex-row" style="align-items:center;" v-if='item.sex==2' @click="addFriend(item)">
+                                <img src="../../image/home_female.png" alt="" style="width:0.75rem;height:0.75rem;">
+                                <span style="font-size:0.6rem;color:#FDA4BA;margin-left:0.25rem;">加好友</span>
+                            </div>
+                            <!-- 男 -->
+                            <div class="flex-row" style="align-items:center;" v-if='item.sex==1' @click="addFriend(item)">
+                                <img src="../../image/home_male.png" alt="" style="width:0.75rem;height:0.75rem;">
+                                <span style="font-size:0.6rem;color:#58587F;margin-left:0.25rem;">加好友</span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="flex-row" style="margin-top:0.4rem; font-size:0.7rem; "
+                        v-if='item.currentPlan != undefined'>
+                        <div class='banner_04_kind' v-text="item.currentPlan.instrumentName"></div>
+                        <span style="font-weight:700;margin-left: 0.5rem;">目前练习</span>
+                        <span v-text="'《'+item.currentPlan.song+'》'"></span>
+                    </div>
+                    <div class="grey-line" style="margin-top:0.75rem"></div>
+                </div>
+                <div @click='gotoStrangerSearch' style="font-size:0.7rem;color:#515151;text-align:center;">~去发现更多练琴小伙伴 go go ~</div>
+            </div>
+
+            <div style="color:var(--theme-grey); font-size:0.6rem;text-align:center;margin:0.7rem 0;" >
+                我也是有底线的哦~~
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js"></script>
+<script type="text/javascript" src="../../script/aui-toast.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        // $api.fixStatusBar($api.dom('header'));
+        // $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.friendUserId = params.friendUserId;
+        console.log('页面传参过来的id=======', vm.friendUserId);
+
+        vm.initData();
+
+    };
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '基本模板',
+            strangerPage: {
+                current: 1,
+                size: 5,
+                pages: 0,
+                total: 0
+            },
+            friendUserId: "",
+            strangerList: [],
+            friendList: [],
+            bottomLine: 0,
+            friendInfo: {
+            },
+            currentPlan: {},
+        },
+        // 打开新页面时怎么让页面自动滚到顶部
+        updated() {
+            window.scroll(0, 0);
+        },
+        methods: {
+            initData() {
+                this.getStrangerList();
+                this.getFriendInfo();
+                this.getCurrentPlan();
+            },
+            getStrangerList() {
+                var that = this;
+                var params = {
+                    queryParams: {
+                        userId: that.friendUserId
+                    },
+                    page: that.strangerPage
+                };
+                ajaxPost('/friend/getStrangerList', params, function(ret, err) {
+                    console.log('' + JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.strangerPage = ret.data.page;
+                            that.strangerList = ret.data.list;
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            getFriendInfo() {
+                console.log('getFriendInfo');
+                var that = this;
+                ajaxPost('/user/get', that.friendUserId + '', function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.friendInfo = ret.data;
+                            // console.log(JSON.stringify(that.friendInfo));
+                            api.pageUp({
+                                top: true
+                            }, function(ret, err) {
+                            });
+                        } else if (ret.returnCode == '-99') { // token过期，跳转登录
+                            console.log('=======-99');
+                            api.openWin({
+                                name: 'phone_login',
+                                url: '../login/phone_login.html',
+                                slidBackEnabled: false
+                            });
+                            return;
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            // 获取当前计划等详细信息
+            getCurrentPlan() {
+                var that = this;
+                ajaxPost('/plan/getUserCurrentPlan', that.friendUserId + '', function(ret, err) {
+                    console.log('' + JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            if (ret.data) {
+                                that.currentPlan = ret.data;
+                            }
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            // 删除好友
+            deleteFriend(item, index) {
+                // console.log(123);
+                var that = this;
+                var dialog = new auiDialog();
+                dialog.alert({
+                    // title:"弹出提示",
+                    msg: '确定要删除好友吗',
+                    buttons: ['取消', '确定']
+                }, function(ret) {
+                    // console.log(JSON.stringify(ret))
+                    if (ret.buttonIndex == 2) {
+                        api.showProgress({
+                            title: '加载中...'
+                        });
+                        ajaxPost('/friend/delete', item.id + '', function(ret, err) {
+                            api.hideProgress();
+                            if (ret) {
+                                // console.log(JSON.stringify(ret));
+                                if (ret.returnCode == '1') {
+                                    that.friendList.splice(index, 1);
+                                } else if (ret.returnCode == '-99') { // token过期，跳转登录
+                                    api.openWin({
+                                        name: 'phone_login',
+                                        url: '../login/phone_login.html'
+                                    });
+                                    return;
+                                } else {
+                                    api.toast({
+                                        msg: ret.returnMsg,
+                                        location: 'middle'
+                                    });
+                                }
+
+                            } else {
+                                api.toast({
+                                    msg: JSON.stringify(err),
+                                    location: 'middle'
+                                });
+                            }
+
+                        })
+                    }
+                })
+            },
+            // 添加好友
+            addFriend(item) {
+                // console.log(JSON.stringify(item));
+                var that = this;
+                if (item.isFriendOpen == 1) {
+                    api.openWin({
+                        name: 'add_friend',
+                        url: '../friend/add_friend.html',
+                        pageParam: {
+                            // name: 'test'
+                            targetId: item.id,
+                        }
+                    });
+                } else {
+                    api.toast({
+                        msg: '对方拒绝陌生人加好友',
+                        location: 'middle'
+                    });
+                }
+            },
+            strangeHome(item) {
+                console.log(item.id);
+                api.openWin({
+                    name: 'friend_page',
+                    url: './friend_page.html',
+                    pageParam: {
+                        friendUserId: item.id
+                    },
+                    reload: true
+                });
+            },
+            friendPage(item) {
+                console.log(item.id);
+                this.friendUserId = item.id;
+                this.getFriendInfo();
+                this.getCurrentPlan();
+            },
+            hasRecord(year, month, day) {
+                if (month < 10) {
+                    month = '0' + month;
+                }
+                if (day < 10) {
+                    day = '0' + day;
+                }
+                var dayStr = year + '-' + month + '-' + day
+                    // console.log(dayStr);
+                if (this.currentPlan.practiceDateList.indexOf(dayStr) >= 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+            room() {
+                api.openWin({
+                    name: 'waiting_room',
+                    url: '../room/waiting_room.html',
+                    pageParam: {
+                        name: 'test'
+                    }
+                });
+            },
+            // 消息中心
+            news() {
+                api.openWin({
+                    name: 'msg_list',
+                    url: '../home/msg_list.html',
+                    pageParam: {
+                        userId: this.friendUserId
+                    }
+                });
+
+            },
+            // 邀请好友
+            gotoShare() {
+                console.log('gotoShare');
+                api.openWin({
+                    name: 'share_win',
+                    url: './share_win.html',
+                    pageParam: {
+                        userId: this.friendUserId
+                    }
+                });
+            },
+            previous() {
+                api.openWin({
+                    name: 'history_plan',
+                    url: './history_plan.html',
+                    pageParam: {
+                        userId: this.friendUserId
+                    }
+                });
+            },
+            gotoStrangerSearch() {
+                api.openWin({
+                    name: 'stranger_search',
+                    url: '../friend/stranger_search.html',
+                    pageParam: {
+                        userId: this.friendUserId
+                    }
+                });
+            },
+            goBackPage() {
+                console.log('goBackPage');
+                api.closeWin();
+            },
+        }
+    })
+</script>
+
+</html>

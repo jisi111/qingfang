@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css" />
+    <style>
+        body{
+            color:var(--theme-black);
+            font-size: 0.8rem;
+        }
+        .invite1{
+            width: 3.5rem;
+            height: 1rem;
+            border-radius: 0.5rem;
+            color: var(--theme-color);
+            font-size: 0.65rem;
+            text-align: center;
+            line-height: 1rem;
+            background-color: #FF9800;
+            margin-top: 0.4rem;
+        }
+        .invite2{
+            width: 3.5rem;
+            height: 1rem;
+            border-radius: 0.5rem;
+            color: var(--theme-color);
+            font-size: 0.65rem;
+            text-align: center;
+            line-height: 1rem;
+            background-color: #FF4081 ;
+            margin-top: 0.4rem;
+        }
+        .invite3{
+            width: 3.5rem;
+            height: 1rem;
+            border-radius: 0.5rem;
+            color: var(--theme-color);
+            font-size: 0.65rem;
+            text-align: center;
+            line-height: 1rem;
+            background-color: #3AB2BF ;
+            margin-top: 0.4rem;
+        }
+        .invite-offline{
+            width: 3.5rem;
+            height: 1rem;
+            border-radius: 0.5rem;
+            color: var(--theme-color);
+            font-size: 0.65rem;
+            text-align: center;
+            line-height: 1rem;
+            background-color: var(--theme-grey);
+            margin-top: 0.4rem;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="app" style="overflow: hidden;">
+        <header class="header theme-bg header-fix flex-row">
+            <img src="../../image/add_delete.png" alt="" style="width:1.25rem; height:1.25rem;" @click='goBackPage'>
+            <span v-text='title' style="font-size: 1.2rem; margin-left: 0.5rem; "></span>
+        </header>
+        <!--高度至少1px才能有效偏移-->
+        <div id='first-el' style="height: 1px; "></div>
+
+        <div class="base-padding">
+            <div style="margin-top:3.4rem;">
+                <!-- <img src="../../image/user-photo.png" alt=""style="width:3rem;height:3rem;margin:0 auto;"> -->
+                <img :src="userInfo.image" alt=""style="width:3rem;height:3rem; border-radius: 50%; margin:0 auto;">
+                <p style="text-align:center;margin-top:0.5rem;" v-text='userInfo.nickName'></p>
+            </div>
+            <div class="flex-row" style="margin-top:3.35rem; flex-wrap:wrap; justify-content: flex-start; ">
+                <div class="flex-col"  V-for="(item,index) in memberList" v-if='item.id != userInfo.id'
+                    style="width: 33%; margin-top: 1rem; align-items:center; ">
+                    <img :src="item.image" style="width:3rem;height:3rem; border-radius: 50%; margin:0 auto;">
+                    <p style="margin-top:0.5rem;" v-text="item.nickName"></p>
+                    <!-- 状态，1未邀请，2已邀请，3已接受邀请，4已拒绝邀请，5已进入，6已退出 -->
+                    <div class="invite1" v-if="item.roomStatus == 1">未邀请</div>
+                    <div class="invite2" v-if="item.roomStatus == 2 || item.roomStatus == 3">等待进入</div>
+                    <div class="invite-offline" v-if="item.roomStatus == 4">拒绝邀请</div>
+                    <div class="invite3" v-if="item.roomStatus == 5">已进入</div>
+                    <div class="invite-offline" v-if="item.roomStatus == 6">已退出</div>
+                </div>
+                <!-- <div class="flex-col"style="margin-left:3.51rem;">
+                    <img src="../../image/user-photo.png" alt=""style="width:3rem;height:3rem;margin:0 auto;">
+                    <p style="margin-top:0.5rem;">献给爱丽丝</p>
+                    <div class="invite" style="background-color:#3AB2BF;">已进入</div>
+                </div> -->
+            </div>
+        </div>
+        <div class=" bottom_fixed" @click='gotoVideoChat'>
+            进入琴房
+        </div>
+
+    </div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js"></script>
+<script type="text/javascript" src="../../script/aui-toast.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        $api.fixStatusBar($api.dom('header'));
+        $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.roomId = params.roomId;
+
+        vm.initData();
+
+        api.addEventListener({
+            name: 'keyback'
+        }, function(ret, err) {
+            vm.goBackPage();
+        });
+
+        if (api.systemType == 'ios') {
+            api.addEventListener({
+                name:'swiperight'
+            }, function(ret, err){
+                vm.goBackPage();
+            });
+        }
+
+        api.addEventListener({
+            name:'viewappear'
+        }, function(ret, err){
+           vm.startWaitingListInterval();
+        });
+    };
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '等候区',
+            waitingListInterval: '',
+            roomId: '',
+            userInfo:{
+                id: 0,
+                name: "",
+                image: '../../image/user-photo.png',
+            },
+            leftFlowPeriod: 0,
+            memberList: [],
+        },
+        methods: {
+            gotoVideoChat() {
+                var that = this;
+                ajaxPost('/flowRecord/getLeftFlowPeriod', api.systemType, function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.leftFlowPeriod = ret.data;
+                            if (that.leftFlowPeriod <= 10) {
+                                if (that.waitingListInterval != undefined) {
+                                    clearInterval(that.waitingListInterval);
+                                }
+                                api.openWin({
+                                    name: 'pay_flow',
+                                    url: './pay_flow.html',
+                                    pageParam: {
+                                        roomId: that.roomId
+                                    },
+                                    reload: true,
+                                });
+                            } else {
+                                // 房间是否已满员
+                                that.isRoomFull();
+                            }
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            isRoomFull() {
+                var that = this;
+                ajaxPost('/roomMember/isRoomFull', that.roomId + '', function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            if (ret.data) {// 已满员，不允许进入
+                                var dialog = new auiDialog({})
+                                dialog.alert({
+                                    title:"提示",
+                                    msg:'琴房已经满员，请下次再约',
+                                    buttons:['取消', '确定']
+                                }, function(ret) {
+                                })
+                            } else {
+                                if (that.waitingListInterval != undefined) {
+                                    clearInterval(that.waitingListInterval);
+                                }
+                                $api.setStorage('roomPage', 'guest_waiting_room');
+                                api.openWin({
+                                    name: 'video_win',
+                                    url: '../video_chat/video_win.html',
+                                    pageParam: {
+                                        roomId: that.roomId + '',
+                                    },
+                                    reload: true,
+                                    slidBackEnabled: false
+                                });
+                            }
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            initData() {
+                this.userInfo = $api.getStorage('userInfo');
+                this.getGuestWaitingList();
+                this.startWaitingListInterval();
+            },
+            startWaitingListInterval() {
+                var that = this;
+                if (that.waitingListInterval != undefined) {
+                    clearInterval(that.waitingListInterval);
+                }
+                that.waitingListInterval = setInterval(function () {
+                    that.getGuestWaitingList();
+                }, 1000);
+            },
+            getGuestWaitingList() {
+                var that = this;
+                ajaxPost('/roomMember/getGuestWaitingList', that.roomId + '', function(ret, err) {
+                    // console.log('getGuestWaitingList ' + JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            that.memberList = ret.data;
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            goBackPage() {
+                var that = this;
+                if (that.waitingListInterval != undefined) {
+                    clearInterval(that.waitingListInterval);
+                }
+                api.closeWin();
+            },
+        }
+    })
+</script>
+
+</html>

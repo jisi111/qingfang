@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <style>
+    .blue0{
+        width: 4.3rem;
+        height: 2rem;
+        background-color:  #EEEEEE ;
+        text-align: center;
+        line-height: 2rem;
+        margin-right: 1px;
+        color: #9E9E9E ;
+    }
+    .day0{
+        width: 4.3rem;
+        height: 2rem;
+        background-color:  #EEEEEE ;
+        text-align: center;
+        line-height: 2rem;
+        margin-right: 1px;
+        background-color: #3AB2BF ;
+        color: white;
+    }
+
+    </style>
+</head>
+<body>
+<div id="app" style="overflow: hidden;">
+    <header class="header theme-bg header-fix flex-row" style="width: 100%; align-items: center; ">
+        <img src="../../image/add_delete.png" alt="" style="width:1.25rem; height:1.25rem;" @click='goBack'>
+        <span v-text='title' style="font-size: 1.2rem; margin-left: 0.5rem; "></span>
+        <div class="" @click="add" style="margin-left: auto; margin-right: 1.25rem;">
+            保存
+        </div>
+    </header>
+	<!--高度至少1px才能有效偏移-->
+    <div id='first-el' style="height: 1px; "></div>
+
+    <div class="base-padding" >
+        <div class="flex-row" style="border-bottom: 1px solid #F4F4F4;align-items:center;padding: 1.75rem 0 0.95rem 0;">
+            <div style="font-size:0.8rem;font-weight:bold">目前学习</div>
+            <div class="flex-1">
+
+            </div>
+            <div class="" style="text-align: right;">
+            <input type="text" placeholder="输入乐器名称"  style="text-align: right;"
+                v-model="plan.instrumentName">
+            </div>
+        </div>
+        <div class="">
+            <div class="" style="margin-top: 0.9rem;font-weight:bold">
+                目前学习（练习）曲目
+            </div>
+            <div class="" style="width:100%;height: 3.5rem;">
+                <input type="text" name="" value="" placeholder="曲目名称" v-model="plan.song">
+            </div>
+        </div>
+        <div class=" margin-top: 0.45rem;">
+            <div class="" style="font-weight:bold">
+                练琴计划（天）
+            </div>
+            <div class="flex-col" style="">
+                <div class="flex-row " style=" margin-top: 0.9rem;">
+                    <div class="blue0"  v-bind:class='{"day0": plan.period == 30}' @click="tabclick(30)" >
+                        30
+                    </div>
+                    <div class="blue0"  v-bind:class='{"day0": plan.period == 60}' @click="tabclick(60)" >
+                        60
+                    </div>
+                    <div class="blue0"  v-bind:class='{"day0": plan.period == 90}' @click="tabclick(90)">
+                        90
+                    </div>
+                    <div class="blue0"  v-bind:class='{"day0": plan.period == 120}' @click="tabclick(120)" >
+                        120
+                    </div>
+                </div>
+                <div class="flex-col" style="height:2rem; border: 1px solid #F4F4F4; border-radius: 0.25rem;margin-top: 0.9rem;width:100%;margin-bottom: 0.95em;align-items:center">
+                    <input type="text" placeholder="自定义练琴天数" style="margin-left: 1rem;"
+                        v-model="plan.period">
+                </div>
+            </div>
+            <div class="flex-col" style="margin-top: 1.45rem;">
+                <div class="" style="font-weight:bold">
+                    心愿礼物
+                </div>
+                <div class="flex-row" style="height:2rem; border: 1px solid #F4F4F4; border-radius: 0.25rem;margin-top: 0.9rem;width:100%;margin-bottom: 1.4rem;align-items:center">
+                    <input type="text" placeholder="输入礼物的名称" style="margin-left: 0.5rem;"
+                        v-model="plan.reward">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        $api.fixStatusBar($api.dom('header'));
+        $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.initData();
+    };
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '设置计划',
+            userInfo: {},
+            plan: {
+                period: 0
+            },
+            editMode: 'add',
+        },
+        methods: {
+            initData() {
+                this.userInfo = $api.getStorage('userInfo');
+                this.getCurrentPlan();
+            },
+            getCurrentPlan() {
+                var that = this;
+                ajaxPost('/plan/getUserCurrentPlan', that.userInfo.id + '', function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            if (ret.data) {
+                                that.plan = ret.data;
+                                that.editMode = 'edit';
+                            } else {
+                                that.editMode = 'add';
+                            }
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+            tabclick(val){
+                if (this.editMode == 'add') {
+                    this.plan.period = val;
+                } else {
+                    api.toast({
+                        msg: '进行中的计划天数不能修改',
+                        location: 'middle'
+                    });
+                }
+            },
+            add(){
+                var that = this;
+                console.log(JSON.stringify(that.plan))
+                var url;
+                if (that.editMode == 'add') {
+                    url = '/plan/add'
+                } else {
+                    url = '/plan/update'
+                }
+                ajaxPost(url, that.plan, function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            api.toast({
+                                msg: '设置成功',
+                                location: 'middle'
+                            });
+                            that.editMode = 'edit'
+
+                            api.execScript({
+                                name: 'root',
+                                frameName: 'home_page',
+                                script: 'requeryCurPlan()'
+                            });
+
+                            api.closeWin()
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+        }
+    })
+
+</script>
+
+</html>

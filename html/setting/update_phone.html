@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <style>
+    .pd{
+        padding: 0 0.75rem;
+    }
+    </style>
+</head>
+<body>
+    <div id="app" style="overflow: hidden;">
+        <header class="header theme-bg header-fix flex-row">
+            <img src="../../image/add_delete.png" alt="" style="width:1.25rem; height:1.25rem;" @click='goBack'>
+            <span v-text='title' style="font-size: 1.2rem; margin-left: 0.5rem; "></span>
+        </header>
+        <!--高度至少1px才能有效偏移-->
+        <div id='first-el' style="height: 1px; "></div>
+
+        <div class="pd" style="padding-top: 0.9rem;padding-bottom:1.1rem;">
+            <span style="font-size: 0.rem;" v-if='userInfo.phone != undefined' v-text='"已绑定手机号" + userInfo.phone'></span>
+            <span style="font-size: 0.rem;" v-if='userInfo.phone == undefined' v-text='"未绑定手机号"'></span>
+        </div>
+        <div class="flex-row pd" style="align-items:center; ">
+            <input type="text" name="" value="" placeholder="输入验证码" style="width:10rem; height:1.5rem;">
+            <div class="flex-1">
+            </div>
+            <div class="" style="color:#64B5F6 ;">
+                获取验证码
+            </div>
+        </div>
+        <div class="" @click="gotoBindNew" style="margin: 0 0.75rem;margin-top: 1.8rem;border-radius: 0.4rem;color: white;background-color: #379FBD ;height: 2rem;text-align: center;line-height: 2rem;" >
+            绑定新手机号
+        </div>
+        <div class="" style="text-align:center;margin-top: 1rem;">
+                <span style="color:#9E9E9E;font-size: 0.7rem; " @click="update_old_phone">原手机号丢失/停用</span>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        $api.fixStatusBar($api.dom('header'));
+        $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.initData();
+    };
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '更换手机',
+            userInfo: {},
+        },
+        methods: {
+            initData() {
+                this.userInfo = $api.getStorage('userInfo');
+            },
+            gotoBindNew(){
+                api.openWin({
+                    name: 'bind_new_phone',
+                    url: './bind_new_phone.html',
+                    pageParam: {
+                        name: 'test'
+                    }
+                });
+            },
+            update_old_phone(){
+                api.openWin({
+                    name: 'old_phone',
+                    url: './old_phone.html',
+                    pageParam: {
+                        name: 'test'
+                    }
+                });
+
+            }
+        }
+    })
+
+</script>
+
+</html>

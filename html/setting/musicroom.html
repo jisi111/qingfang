@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <style>
+
+    </style>
+</head>
+<body>
+<div id="app" class="flex-col">
+    <header class="header theme-bg header-fix flex-row">
+        <img src="../../image/add_delete.png" alt="" style="width:1.25rem; height:1.25rem;" @click='goBack'>
+        <span v-text='title' style="font-size: 1.2rem; margin-left: 0.5rem; "></span>
+    </header>
+	<!--高度至少1px才能有效偏移-->
+    <div id='first-el' style="height: 1px; "></div>
+    <div class=""style="align-items:center;text-align:center">
+        <img src="../../image/logo.png" alt="" style="width: 7.5rem;height: 7.5rem;margin:2.36rem 5.39rem 1.75rem 5.39rem">
+        <span style="font-size:0.63rem;color:#9E9E9E;" v-text='"来吖练琴V" + version'></span>
+    </div>
+    <div class="flex-1">
+
+    </div>
+    <div class="" style="font-size: 0.52rem;color:#9E9E9E;text-align:center;margin-top: 16.71rem;">
+        copyright©  珠海创新视野科技有限公司
+    </div>
+
+</div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        $api.fixStatusBar($api.dom('header'));
+        $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam; //页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.initData();
+    };
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '关于',
+            version: '',
+        },
+        methods: {
+            initData() {
+                this.version = api.appVersion;                
+            },
+
+        }
+    })
+
+</script>
+
+</html>

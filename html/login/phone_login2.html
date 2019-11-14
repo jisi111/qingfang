@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>基本模板</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/> Q`
+      <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+    <style>
+    body{
+        background: url(../../image/user-cover-03.png) top center;
+        background-repeat:  no-repeat;
+        background-size: 100%;
+    }
+    .flex-row>input {
+        width:2.75rem;
+        height: 2.75rem;
+        background-color: var(--theme-light-grey);
+        border-radius: 0.21rem;
+        text-align: center;
+
+    }
+    .local-padding{
+        padding: 0 2rem;
+    }
+    </style>
+</head>
+<body>
+<div id="app" class='flex-col' style=" ">
+    <img src="../../image/del-white.png" alt="" style="width:1.25rem; height:1.25rem; margin-top: 1rem; margin-left: 1rem;" @click='goBack'>
+    <!--高度至少1px才能有效偏移-->
+    <div id='first-el' style="height: 1px; "></div>
+
+    <div class="local-padding" style="margin-top: 3rem; ">
+        <div style="color:var(--theme-color);font-size: 1.4rem; font-weight: bold; ">练琴</div>
+        <div style="color:var(--theme-color);font-size: 1rem;">不再是一个人枯燥漫长的坚持</div>
+    </div>
+    <div class="local-padding" style="margin-bottom: 1rem;">
+        <span style="font-size: 0.8rem;color:white;margin-top:4.4rem ;">已发送验证码至 <span v-text="phone"></span></span>
+    </div>
+    <div class="flex-col" style="align-items:center;">
+        <div class="flex-row flex-between code">
+            <input type="number" maxlength="1" style="background-color:#FFFFFF ;opacity:0.7;border-radius: 0.21rem;margin-right: 1rem;" id='checkCodeInput0' v-model='checkCode0'>
+            <input type="number" maxlength="1" style="background-color:#FFFFFF ;opacity:0.7;border-radius: 0.21rem;margin-right: 1rem;" id='checkCodeInput1' v-model='checkCode1'>
+            <input type="number" maxlength="1" style="background-color:#FFFFFF ;opacity:0.7;border-radius: 0.21rem;margin-right: 1rem;" id='checkCodeInput2' v-model='checkCode2'>
+            <input type="number" maxlength="1" style="background-color:#FFFFFF ;opacity:0.7;border-radius: 0.21rem;"oninput="if(value.length>1)value=value.slice(0,1)" v-model='checkCode3' id='checkCodeInput3'>
+        </div>
+    </div>
+    <p style="color:white;font-size: 0.8rem;margin-top: 0.5rem;margin-left:2rem;"
+        @click=resendCode >重新发送<span v-text="'(' + countDown + ')'"></span></p>
+
+</div>
+</body>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/aui-dialog.js" ></script>
+<script type="text/javascript" src="../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/constant.js"></script>
+<script type="text/javascript" src="../../script/util.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        api.parseTapmode();
+        FastClick.attach(document.body);
+        // $api.fixStatusBar($api.dom('header'));
+        // $api.css($api.dom('#first-el'), 'margin-top: ' + $api.dom('header').offsetHeight + 'px');
+        if (api.systemType == 'ios') {
+            FastClick.prototype.focus = function(targetElement) {
+                targetElement.focus();
+            };
+        }
+
+        var params = api.pageParam;
+        console.log('width======'+JSON.stringify(api.winWidth));
+        console.log(' height======'+JSON.stringify(api.winHeight));
+        vm.phone = params.phone;
+        console.log(vm.phone)//页面传参
+        if (params.title) {
+            vm.title = params.title;
+        }
+        vm.initData();
+    };
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            title: '基本模板',
+            countDown: 59,
+            timeInterval: '',
+            phone:'',
+            checkCode0: '',
+            checkCode1: '',
+            checkCode2: '',
+            checkCode3: '',
+        },
+        methods: {
+            initData() {
+                var that = this;
+                that.startCountDown();
+            },
+            startCountDown() {
+                var that = this;
+                that.countDown= 59;
+                if (that.timeInterval != undefined) {
+                    clearInterval(that.timeInterval);
+                }
+                that.timeInterval = setInterval(function () {
+                    if (that.countDown > 0) {
+                        that.countDown--;
+                    }
+                    if (that.countDown == 0) {
+                        clearInterval(that.timeInterval);
+                        return;
+                    }
+                }, 1000);
+            },
+            resendCode(){
+                if ( this.countDown > 0){
+                    return ;
+                }
+                if( this.countDown == 0){
+                    this.sendCheckCode();
+                }
+            },
+            sendCheckCode(){
+                var that = this;
+                var reg = /^[1][3-9]\d{9}$/
+                if(!reg.test(that.phone)){
+                  api.toast({
+                      msg: '请输入正确的手机号码',
+                      location: 'middle'
+                  });
+                }else{
+                    api.showProgress({
+                        title: '努力加载中...'
+                    });
+
+                    ajaxPost('/user/getCheckCode', that.phone, function(ret, err) {
+                      api.hideProgress();
+                      // console.log(JSON.stringify(ret));
+                      if (ret) {
+                          if (ret.returnCode == '1') {
+                              console.log(JSON.stringify(that.phone));
+                              // 重新开始计时
+                              that.startCountDown();
+                          } else {
+                              api.toast({
+                                  msg: ret.returnMsg,
+                                  location: 'middle'
+                              });
+                          }
+                      } else {
+                          api.toast({
+                              msg: JSON.stringify(err),
+                              location: 'middle'
+                          });
+                      }
+                  })
+              }
+          },
+            login() {
+                var that = this;
+                var location = $api.getStorage('location')
+                var params = {
+                    phone: that.phone,
+                    checkCode: that.checkCode0 + that.checkCode1 + that.checkCode2 + that.checkCode3,
+                    districtCode: location == undefined ? '' : location.adCode
+                };
+                console.log(JSON.stringify(params));
+                ajaxPost('/user/phoneLogin', params, function(ret, err) {
+                    // console.log(JSON.stringify(ret));
+                    if (ret) {
+                        if (ret.returnCode == '1') {
+                            var userInfo = ret.data;
+                            $api.setStorage('userInfo', userInfo);
+                            $api.setStorage('userId', userInfo.id);
+                            $api.setStorage('token', userInfo.token);
+                            $api.setStorage('rcToken', userInfo.rcToken);
+                            console.log(JSON.stringify($api.getStorage('userId', userInfo.id)));
+
+                            if (userInfo.sex == undefined) {// 性别为空，选择性别
+                                api.openWin({
+                                    name: 'sex_option',
+                                    url: './sex_option.html',
+                                    pageParam: {
+                                    },
+                                    reload:true
+                                });
+                            } else {
+                                api.execScript({
+                                    name: 'root',
+                                    script: 'reloadHomePage();'
+                                });
+                                api.closeToWin({
+                                    name: 'root'
+                                });
+                            }
+                        } else {
+                            api.toast({
+                                msg: ret.returnMsg,
+                                location: 'middle'
+                            });
+                        }
+                    } else {
+                        api.toast({
+                            msg: JSON.stringify(err),
+                            location: 'middle'
+                        });
+                    }
+                })
+            },
+        },
+            watch: {
+                checkCode0(val) {
+                    if (val != '' && val != undefined) {
+                        $api.dom('#checkCodeInput1').focus();
+                    }
+                },
+                checkCode1(val) {
+                    if (val != '' && val != undefined) {
+                        $api.dom('#checkCodeInput2').focus();
+                    }
+                },
+                checkCode2(val) {
+                    if (val != '' && val != undefined) {
+                        $api.dom('#checkCodeInput3').focus();
+                    }
+                },
+                checkCode3(val){
+                    if(val !="" && val!= undefined){
+                    this.login();
+                    return 0;
+                    }
+                }
+            },
+
+    })
+
+</script>
+
+</html>
